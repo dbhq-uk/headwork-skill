@@ -1,0 +1,21 @@
+{
+  "name": "headwork",
+  "description": "Think a decision through, one question at a time. headwork takes the decision blocking you right now, explains it in plain English, and puts it as a single question whose options each carry their justification and a named recommendation - and it never asks what it could have answered by looking. It does not go hunting for work, it does not edit anything, and it keeps no state.",
+  "version": "1.0.0",
+  "author": {
+    "name": "DBHQ",
+    "email": "dan@dbhq.uk"
+  },
+  "homepage": "https://dbhq.uk",
+  "repository": "https://github.com/dbhq-uk/headwork-skill",
+  "license": "MIT",
+  "keywords": [
+    "decision-making",
+    "unblocking",
+    "questions",
+    "planning",
+    "prioritisation",
+    "interview",
+    "agent-behaviour"
+  ]
+}

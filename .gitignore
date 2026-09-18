@@ -1,0 +1,26 @@
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Local agent tooling state
+.serena/
+.claude/settings.local.json
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.venv/
+
+# headwork keeps no state by design, and these are the paths it must never
+# create. They are ignored so that an accidental local one is not committed -
+# but a test also greps the source for them, because ignoring a file is not
+# the same as not writing it.
+.headwork/
+.env

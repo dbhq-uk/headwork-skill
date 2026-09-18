@@ -1,0 +1,87 @@
+name: Validate
+
+on:
+  push:
+  pull_request:
+
+# The default for every job below. A job that needs more declares it itself;
+# an explicit floor here means a new job cannot silently inherit an org
+# setting somebody widened.
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v5
+        with:
+          python-version: "3.9"
+
+      - name: Installers are valid bash
+        run: bash -n install.sh install-codex.sh
+
+      - name: Plugin manifest is valid JSON
+        run: jq empty .claude-plugin/plugin.json
+
+      - name: SKILL.md has name and description frontmatter
+        run: |
+          python3 - <<'PY'
+          import pathlib, re, sys
+          ok = True
+          for skill in sorted(pathlib.Path("skills").glob("*/SKILL.md")):
+              text = skill.read_text(encoding="utf-8")
+              match = re.match(r"^---\n(.*?)\n---", text, re.S)
+              if not match:
+                  print(f"{skill}: no frontmatter")
+                  ok = False
+                  continue
+              for key in ("name:", "description:"):
+                  if key not in match.group(1):
+                      print(f"{skill}: missing {key}")
+                      ok = False
+          sys.exit(0 if ok else 1)
+          PY
+
+      - name: No em or en dashes
+        run: |
+          if grep -rn '[—–]' --include='*.md' --include='*.py' .; then
+            echo "House style is a plain hyphen."
+            exit 1
+          fi
+
+      - name: The rules hold
+        run: |
+          python3 -m pip install --quiet pytest
+          python3 -m pytest skills/headwork/tests -q
+
+  # THE SAME TWO LINTERS IN EVERY DBHQ SKILL REPO, settled 17 Sep 2026.
+  #
+  # IT IS A DELIBERATELY NARROW RUFF SELECTION. `E9` is syntax errors and `F`
+  # is the pyflakes set: undefined names, unused imports, f-strings with no
+  # placeholders. Those are bugs. The full default selection flags import order
+  # and whitespace across the estate, which would mean reformatting thousands
+  # of lines to buy a gate that catches less than this one does.
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: shellcheck
+        # -S warning, not the default, because `info` and `style` fire on
+        # idioms these scripts use deliberately. xargs -r so a repo with no
+        # shell scripts is a pass rather than a shellcheck usage error.
+        run: |
+          find . -name '*.sh' -not -path '*/.venv/*' -print0 \
+            | xargs -0 -r shellcheck -S warning
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v5
+        with:
+          python-version: "3.11"
+
+      - name: ruff - syntax errors and undefined names
+        run: |
+          pip install --quiet ruff
+          ruff check . --select E9,F --exclude .venv
