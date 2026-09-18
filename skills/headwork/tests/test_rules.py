@@ -5,12 +5,14 @@ states its rules and that the two harness paths carry the same parts. They
 cannot test how a model behaves after reading the file, and they do not pretend
 to. See AGENTS.md, which states that limit rather than hiding it.
 
-The rules under test are the four in AGENTS.md:
+The rules under test are the ones in AGENTS.md:
 
   1. Never ask what you can find out
-  2. One question per message, then stop
+  2. One question per message, then stop - rounds are NOT capped
   3. Every option carries a justification, and every alternative its cost
-  4. The two harness paths carry the same parts
+  3a. The recommendation says what would overturn it
+  4. The two harness paths carry the same six parts
+  5. Findability is not the only test - consequence is the other one
 
 Plus the three things headwork must never grow: a scanner, write access, state.
 """
@@ -113,16 +115,38 @@ def test_option_bounds_appear_in_both_paths(skill_text):
         assert "two to four options" in body, f"{path_name} lost the option bound"
 
 
+# --- Rule 3a: the recommendation says what would overturn it ---------------
+
+
+def test_the_overturn_clause_is_required(skill_lower):
+    """A recommendation with no stated escape is an anchor, not advice."""
+    assert "what would overturn" in skill_lower
+    assert "overturned if:" in skill_lower
+
+
+@pytest.mark.parametrize(
+    "heading",
+    [
+        "The question box - Claude Code",
+        "The text fallback - Codex and any other harness",
+    ],
+)
+def test_the_overturn_clause_appears_in_both_paths(skill_text, heading):
+    body = section(skill_text, heading)
+    assert "overturned if:" in body, f"{heading!r} lost the OVERTURNED IF clause"
+
+
 # --- Rule 4: the two harness paths carry the same parts -------------------
 
-# The five parts, and a marker that must appear in each harness section. A new
+# The six parts, and a marker that must appear in each harness section. A new
 # harness section added per CONTRIBUTING.md should be added to HARNESS_SECTIONS.
-FIVE_PARTS = {
+SIX_PARTS = {
     "what you checked": "what you checked",
     "bite-sized explainer": "bite-sized",
     "two to four options": "two to four options",
     "justification per option": "justification",
     "named recommendation": "recommend",
+    "what would overturn it": "overturn",
 }
 
 HARNESS_SECTIONS = [
@@ -131,28 +155,51 @@ HARNESS_SECTIONS = [
 ]
 
 
-def test_the_five_parts_are_stated_once_up_front(skill_text):
-    parts = section(skill_text, "The five parts")
-    for part, marker in FIVE_PARTS.items():
-        assert marker in parts, f"'The five parts' no longer names {part}"
+def test_the_six_parts_are_stated_once_up_front(skill_text):
+    parts = section(skill_text, "The six parts")
+    for part, marker in SIX_PARTS.items():
+        assert marker in parts, f"'The six parts' no longer names {part}"
 
 
 @pytest.mark.parametrize("heading", HARNESS_SECTIONS)
 def test_both_paths_carry_the_same_parts(skill_text, heading):
     """The Codex path is the one at risk - nobody develops this in Codex."""
     body = section(skill_text, heading)
-    missing = [part for part, marker in FIVE_PARTS.items() if marker not in body]
+    missing = [part for part, marker in SIX_PARTS.items() if marker not in body]
     assert not missing, f"{heading!r} is missing: {', '.join(missing)}"
+
+
+# --- Rule 5: consequence, not just findability -----------------------------
+
+
+def test_the_consequence_gate_is_stated(skill_lower):
+    """'I could not look it up' does not make a trivial decision worth a turn."""
+    assert "not consequential enough" in skill_lower
+    assert "findability is not the only test" in skill_lower
 
 
 # --- Refusal is a correct result ------------------------------------------
 
 
-def test_all_three_refusal_cases_survive(skill_text):
+def test_all_four_refusal_cases_survive(skill_text):
     body = section(skill_text, "Refusal is a correct result")
     assert "already decided" in body
     assert "only one option is real" in body
+    assert "not consequential enough" in body
     assert "nothing live to decide" in body
+
+
+# --- Rounds are unlimited, questions per message are not -------------------
+
+
+def test_rounds_are_not_capped(skill_lower):
+    """Dan, 18 Sep 2026: keep going for as many rounds as it takes."""
+    assert "as many rounds as it takes" in skill_lower
+    assert "no cap" in skill_lower
+
+
+def test_the_cap_is_per_message_not_per_session(skill_lower):
+    assert "questions per message" in skill_lower
 
 
 # --- The three things headwork must never grow ----------------------------

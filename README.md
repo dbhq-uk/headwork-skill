@@ -17,38 +17,54 @@ A free, open-source tool by [DBHQ](https://dbhq.uk) - documented at [skills.dbhq
 ---
 
 The decision blocking you right now, explained in plain English and put as a
-single question whose options each carry their justification and a named
-recommendation - and never a question it could have answered by looking.
+single question whose options each carry their justification, with one named as
+the recommendation and a clause saying what would overturn it.
 
 ## What makes it different
 
-Ask an agent to unblock you and three things usually go wrong at once. It asks
-several questions in one message, as prose. It offers options as bare labels, so
-choosing means reconstructing the trade-off yourself. And it asks things it
-could have looked up, which is worse than not asking at all.
+**An even-handed list of options is a decision handed back.** Most agents, asked
+to help you decide, produce a menu: four labels, no argument, and the work of
+weighing them still entirely yours. headwork always picks one, gives the reason,
+and then - the part that matters - says what would make a different option
+right.
 
-headwork fixes the third one first, because it is the one that matters:
+> **RECOMMENDED.** REASON: the purge step is four lines calling one documented endpoint, and one push tells you in ninety seconds what an hour of local proving would.
+> **OVERTURNED IF:** a failed purge would serve stale files to real traffic rather than to you.
+
+That last clause is deliberate. A recommendation with no stated escape is an
+anchor, and anchoring is hard to argue with by design. Naming the condition
+hands you the criterion instead of just the verdict, so overruling it is a
+matter of checking a fact you know and the agent does not.
+
+The second rule is what stops the questions being worthless:
 
 > **Never ask what you can find out.**
 
 Before every question it looks - the session, `git log`, the file, the open
-issues, the register - and then states in one line what it checked and what that
-settled. A question a file could have answered is a bug, not a style lapse.
-
-The rule earns its keep by deleting questions. The best round headwork runs is
+issues, the register - and states in one line what it checked. A question a file
+could have answered is a bug, not a style lapse. The best round headwork runs is
 the one where looking removes the decision entirely, and it tells you that
-instead of building a nicely formatted box around a question nobody needed to
-answer.
+rather than building a well-formatted box around a question nobody needed.
+
+It also refuses on cost. A question spends your attention, so a cheap, easily
+reversed choice gets made and stated rather than asked - being unable to look
+something up does not make it worth interrupting you for.
 
 ## What a round looks like
 
 1. **Look** - session first, then whatever the decision touches.
 2. **Say what you checked**, in one line, including anything it already settles.
 3. **Explain in bite-sized chunks** - two to four short points, plain English.
-4. **Ask one question** - two to four options, the recommendation named first,
-   every option carrying its justification and every alternative its cost.
+4. **Ask one question** - two to four options, the recommendation named first
+   with what would overturn it, every option carrying its justification and
+   every alternative its cost.
 5. **Stop and wait.** No second question, no trailing "and also".
 6. **Hand the answer back** to the session, which does the work.
+
+Then it goes again, for **as many rounds as it takes to unblock you**. There is
+no cap. What is capped is questions per message: one, then silence. Four
+questions in one message is a form, and what comes back is whatever was easiest
+to answer rather than what mattered.
 
 ## What it will not do
 
@@ -60,6 +76,27 @@ answer.
 - **headwork keeps no state.** No log, no files, no directory of its own. The
   reasoning belongs in what the answer produces - the commit message, the pull
   request body, or the register the repo already keeps.
+
+## If you are choosing between this and grill-me
+
+[`grill-me`](https://github.com/RobMitt/grill-me-skill) got there first and is
+better known, and it is the honest comparison to draw. It also already asks one
+question at a time, gives two to four options, and explores the codebase rather
+than asking what it could read - so treat those three as table stakes for this
+kind of skill rather than as anyone's selling point.
+
+The difference is what each is **for**:
+
+- **`grill-me` interviews you** - relentlessly, down every branch of a design
+  tree, until you and it share an understanding of the whole plan. Its options
+  are the likely answers, and choosing between them is your job. Reach for it
+  when you have a design to stress-test and time to be taken apart.
+- **`headwork` unblocks you** - it takes whatever is stopping the session right
+  now and argues for an answer. Every question names a recommendation and the
+  condition that would overturn it. Reach for it when you are stuck mid-task and
+  want a considered opinion rather than a thorough examination.
+
+They are not substitutes and there is no reason to pick only one.
 
 ## Install
 
@@ -90,8 +127,8 @@ Nothing to configure. No dependencies, no credentials, no state directory.
 ## Codex and other harnesses
 
 The question box is a Claude Code tool. Codex has none, so headwork ships a
-**specified** text fallback rather than an improvised one - the same five parts
-in a fixed block, one decision per turn, then stop and wait. The two paths are
+**specified** text fallback rather than an improvised one - the same six parts
+in a fixed block, one question per turn, then stop and wait. The two paths are
 held in step by test, so the Codex side cannot quietly rot into prose.
 
 ## Using it
