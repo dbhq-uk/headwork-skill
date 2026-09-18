@@ -4,7 +4,7 @@ Issues and pull requests are welcome.
 
 ## Before you start
 
-Read [`AGENTS.md`](AGENTS.md). It sets out the four rules headwork does not
+Read [`AGENTS.md`](AGENTS.md). It sets out the rules headwork does not
 break and why each one exists. A change that weakens one will not be merged,
 however convenient - they are the difference between a skill and a prompt.
 
@@ -18,20 +18,24 @@ Python 3.9 or newer, standard library plus pytest. No credentials, no network,
 nothing to install.
 
 The tests are structural: they assert `SKILL.md` states its rules, that the
-Claude Code and Codex paths carry the same five parts, and that nothing writes
+Claude Code and Codex paths carry the same six parts, and that nothing writes
 state. They cannot test how a model behaves after reading the file. That limit
 is real and is stated in `AGENTS.md` rather than papered over.
 
 ## The most useful contribution
 
-**A worked example of the look-first rule deleting a question.**
-`skills/headwork/references/worked-examples.md` has one. The rule is the whole
-skill, and the clearest way to teach it is a case where looking turned a
-decision into a fact - a constraint somebody was about to hold a vote on.
+**A worked example of a recommendation being overturned by its own clause.**
+`skills/headwork/references/worked-examples.md` has four rounds but none yet
+where the user reads the `OVERTURNED IF:` condition, knows it holds, and picks
+something else. That is the clause working, and it is the hardest part of the
+skill to teach from an example where the recommendation simply wins.
+
+Also welcome: a case where looking first turned a decision into a fact, which is
+the look-first rule deleting a question rather than dressing one.
 
 Second most useful: **a harness path**. If you use headwork somewhere with its
 own structured-input mechanism, the text fallback probably is not the best it
-can do. Add a section to `SKILL.md` carrying the same five parts, and extend
+can do. Add a section to `SKILL.md` carrying the same six parts, and extend
 `test_both_paths_carry_the_same_parts` to cover it.
 
 ## Style

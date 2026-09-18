@@ -1,7 +1,7 @@
 # Worked examples
 
-Three rounds. The third is the one that matters most, because the best outcome
-is often that the question disappears.
+Four rounds. The last is the one that matters most, because the best outcome is
+often that the question disappears.
 
 ## 1. A normal round
 
@@ -28,11 +28,17 @@ Then one box:
 
 | | |
 |---|---|
-| **Fix the variable and push (Recommended)** | RECOMMENDED. REASON: the purge step is four lines calling one documented endpoint, and the only thing standing between you and knowing is a green run. Proving it separately costs an hour to learn what one push tells you in ninety seconds. |
+| **Fix the variable and push (Recommended)** | RECOMMENDED. REASON: the purge step is four lines calling one documented endpoint, and the only thing standing between you and knowing is a green run. Proving it separately costs an hour to learn what one push tells you in ninety seconds. OVERTURNED IF: a failed purge would serve stale files to real traffic rather than to you - then it is worth proving first, because the cost of being wrong stops being ninety seconds. |
 | **Prove the purge locally first** | Runs the purge by hand against the zone before trusting it in CI, so a second failure does not look like the same failure. COST: an hour, and it does not exercise the CI credentials, which are a different token from the one in your shell - so the thing most likely to break is the thing you would not have tested. |
 | **Revert the purge step for now** | Gets deploys working again today and defers the purge. COST: stale files at the edge are the exact bug the step was added for on 16 Sep, so this reinstates a known problem to avoid an unknown one. |
 
-Then stop.
+Then stop and wait. If the answer turns out to reveal a second decision, that is
+a new round in its own message - not an addition to this one.
+
+The `OVERTURNED IF:` clause is the part most likely to be dropped, and it is the
+part that makes the recommendation arguable rather than authoritative. A reader
+who knows the traffic situation can now overrule the recommendation by checking
+a condition instead of by disagreeing with a machine.
 
 ## 2. A refusal, because only one option is real
 
@@ -48,7 +54,25 @@ Do not build a box. Say:
 
 Then get on with it.
 
-## 3. The best outcome - looking removed the question
+## 3. A refusal, because the decision is too cheap to spend a turn on
+
+The user is mid-task and the agent needs to name a temporary file.
+
+There is no way to look this up - nothing in the repo settles it - so the
+look-first rule would let the question through. Refuse anyway:
+
+> Called it `/tmp/headwork-check.json`. It is a temp file in a scratch directory
+> and renaming it later costs nothing, so it is not worth a question.
+
+The test is not only "can I find this out". It is also "is this worth a turn".
+A question costs the user their attention, and an unfindable trivial decision
+spends that for nothing. Cheap and easily reversed gets decided and stated.
+
+Ask when the decision is expensive, hard to reverse, or genuinely theirs to
+make - a hostname that will end up in other people's links, a schema everything
+downstream reads, anything that spends money.
+
+## 4. The best outcome - looking removed the question
 
 The user says "I can't decide whether to make the banner generator emit PNG or
 SVG".
