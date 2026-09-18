@@ -105,18 +105,36 @@ be unblocked. You can also call it directly:
 
 There is nothing to pass it. It reads what the session is already working on.
 
-## The family
+## Also from DBHQ
 
-headwork is one of a set that share a suffix because they share a shape - each
-does one part of getting work done, and none needs the others:
+Sixteen free agent skills, all of them installable from the same marketplace and
+all documented at **[skills.dbhq.uk](https://skills.dbhq.uk)**. The marketplace
+itself is [dbhq-uk/marketplace](https://github.com/dbhq-uk/marketplace) - one
+`/plugin marketplace add` and every one of them is available.
 
-| Skill | Does |
+Five of them share the `-work` suffix because they share a shape - each does one
+part of getting work done, and none needs the others. `legwork` researches,
+**headwork** decides, `deskwork` tracks and orders, `buildwork` executes, and
+`groupwork` puts a second agent on any of it.
+
+| Skill | What it does |
 |---|---|
-| [`legwork`](https://github.com/dbhq-uk/legwork-skill) | Research that settles a decision |
-| **`headwork`** | **Thinks the decision through, one question at a time** |
-| [`deskwork`](https://github.com/dbhq-uk/deskwork-skill) | Tracks the work and puts it in order |
-| [`buildwork`](https://github.com/dbhq-uk/buildwork-skill) | Runs the issues as parallel agents |
-| [`groupwork`](https://github.com/dbhq-uk/groupwork-skill) | Puts a second agent on any of it |
+| [outlook](https://skills.dbhq.uk/outlook/) | Microsoft 365 mail and calendar, from the terminal |
+| [trello](https://skills.dbhq.uk/trello/) | Your boards, run from your agent |
+| [legwork](https://skills.dbhq.uk/legwork/) | Research that settles a decision, and says when it cannot |
+| [dovetail](https://skills.dbhq.uk/dovetail/) | Checks whether your repository still agrees with itself |
+| [verve](https://skills.dbhq.uk/verve/) | Strips AI tells from prose and puts a voice back |
+| [vela](https://skills.dbhq.uk/vela/) | Compiler-exact code search, in any language you index |
+| [garmin](https://skills.dbhq.uk/garmin/) | Your Garmin data, answered in the terminal |
+| [imager](https://skills.dbhq.uk/imager/) | Images from GPT Image 2, costed before it spends |
+| [gitview](https://skills.dbhq.uk/gitview/) | Which branches are finished, and safe to delete |
+| [atlassian](https://skills.dbhq.uk/atlassian/) | Jira issues and Confluence pages |
+| [pennyblack](https://skills.dbhq.uk/pennyblack/) | A physical letter, posted from the terminal |
+| [buildwork](https://skills.dbhq.uk/buildwork/) | Your open issues, run as parallel agents |
+| [deskwork](https://skills.dbhq.uk/deskwork/) | What an agent noticed, tracked as real work |
+| [groupwork](https://skills.dbhq.uk/groupwork/) | A second agent on the work, and a result you can cite |
+
+Plus [heliograph](https://skills.dbhq.uk/heliograph/), for a machine you cannot log into.
 
 ## Contributing
 
