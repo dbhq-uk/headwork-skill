@@ -144,9 +144,10 @@ There is nothing to pass it. It reads what the session is already working on.
 
 ## Also from DBHQ
 
-Sixteen free agent skills, all of them installable from the same marketplace and
-all documented at **[skills.dbhq.uk](https://skills.dbhq.uk)**. The marketplace
-itself is [dbhq-uk/marketplace](https://github.com/dbhq-uk/marketplace) - one
+Every DBHQ agent skill is free, open source and installable from the same
+marketplace, and all of them are documented at
+**[skills.dbhq.uk](https://skills.dbhq.uk)**. The marketplace itself is
+[dbhq-uk/marketplace](https://github.com/dbhq-uk/marketplace) - one
 `/plugin marketplace add` and every one of them is available.
 
 Five of them share the `-work` suffix because they share a shape - each does one
