@@ -42,7 +42,9 @@ The second rule is what stops the questions being worthless:
 
 Before every question it looks - the session, `git log`, the file, the open
 issues, the register - and states in one line what it checked. A question a file
-could have answered is a bug, not a style lapse. The best round headwork runs is
+could have answered is a bug, not a style lapse.
+
+The best round headwork runs is
 the one where looking removes the decision entirely, and it tells you that
 rather than building a well-formatted box around a question nobody needed.
 
