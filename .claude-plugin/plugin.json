@@ -1,7 +1,6 @@
 {
   "name": "headwork",
   "description": "Think a decision through, one question at a time, with a recommendation you can argue with. An even-handed list of options is a decision handed back, so headwork always names one, gives the reason, and states what would overturn it - the clause that keeps a recommendation from becoming an anchor. It explains the decision in plain English first, never asks what it could have answered by looking, and refuses to spend a question on something cheap and reversible. It does not go hunting for work, it does not edit anything, and it keeps no state.",
-  "version": "1.0.0",
   "author": {
     "name": "DBHQ",
     "email": "dan@dbhq.uk"
