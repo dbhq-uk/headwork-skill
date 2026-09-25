@@ -180,4 +180,6 @@ against a real model by hand. They are not run in CI.
 
 That is a real limit, stated rather than hidden. It means a change that keeps
 every rule visible in the file but buries them under three screens of new prose
-would pass. Keep the file short.
+would pass. Keep the file short: a test fails if `SKILL.md` passes 1,000 words.
+The rules go in `SKILL.md`, the reasons for them here, and the pitch in the
+README.
