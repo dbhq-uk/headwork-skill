@@ -29,9 +29,9 @@ overturn it.** That last clause is what keeps a recommendation from becoming an
 anchor: it hands the user the criterion, not only the verdict, so disagreeing
 with it is a matter of checking a condition rather than overruling a machine.
 
-Asking one thing at a time and looking before you ask are table stakes - other
-skills do both. The argued recommendation is the part that is actually worth
-installing something for.
+Looking before you ask and naming a recommendation are table stakes - other
+skills do both. The overturn clause, a cost on every alternative and one
+question per message are what headwork adds.
 
 ## The rule this skill cannot lose
 

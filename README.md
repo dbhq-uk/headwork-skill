@@ -81,24 +81,35 @@ to answer rather than what mattered.
 
 ## If you are choosing between this and grill-me
 
-[`grill-me`](https://github.com/RobMitt/grill-me-skill) got there first and is
-better known, and it is the honest comparison to draw. It also already asks one
-question at a time, gives two to four options, and explores the codebase rather
-than asking what it could read - so treat those three as table stakes for this
-kind of skill rather than as anyone's selling point.
+[grill-me](https://github.com/mattpocock/skills), from `mattpocock/skills`, is
+the better-known skill of this kind and the honest comparison to draw. It hands
+off to the same repo's `grilling` skill, which maps your plan as a tree of
+decisions and works it in rounds. Each round asks every question it can ask yet,
+all at once, each with a recommended answer. It sends a subagent to look facts
+up rather than asking you, and it is done when no questions are left and you
+confirm you share an understanding.
 
-The difference is what each is **for**:
+So looking before asking and recommending an answer are common ground, not
+headwork's selling point. Five things are different:
 
-- **`grill-me` interviews you** - relentlessly, down every branch of a design
-  tree, until you and it share an understanding of the whole plan. Its options
-  are the likely answers, and choosing between them is your job. Reach for it
-  when you have a design to stress-test and time to be taken apart.
-- **`headwork` unblocks you** - it takes whatever is stopping the session right
-  now and argues for an answer. Every question names a recommendation and the
-  condition that would overturn it. Reach for it when you are stuck mid-task and
-  want a considered opinion rather than a thorough examination.
+- **The recommendation says what would overturn it.** Every headwork
+  recommendation carries an `OVERTURNED IF:` clause, the condition under which
+  another option is right. grilling's recommended answer has no stated escape.
+- **Every alternative names its cost.** A `COST:` on each option that is not the
+  recommendation, so you see what you give up before you pick it.
+- **One question per message.** grilling asks a whole round at once. headwork
+  asks one and waits.
+- **It will not spend a question on a cheap decision.** An easily reversed
+  choice gets made and stated, not asked. grilling aims to leave nothing
+  assumed.
+- **It works on the one decision blocking you now.** grilling maps the whole
+  plan. headwork takes what is stopping the session and leaves the rest until
+  it blocks.
 
-They are not substitutes and there is no reason to pick only one.
+Reach for grill-me when you have a whole plan to stress-test and time to be
+taken apart. Reach for headwork when you are stuck mid-task on one decision and
+want an answer you can argue with. They are not substitutes, and there is no
+reason to pick only one.
 
 ## Install
 

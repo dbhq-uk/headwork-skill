@@ -319,6 +319,40 @@ def test_skill_md_refuses_to_edit(skill_lower):
     assert "never edits anything" in skill_lower
 
 
+# --- The comparison with grill-me -----------------------------------------
+
+GRILL_ME = "https://github.com/mattpocock/skills"
+
+# Claims that were true of a copy, or never true, and must not come back.
+STALE_COMPARISON = (
+    "choosing between them is your job",
+    "got there first",
+    "does not contain the word",
+    "contains the word \"recommend\"",
+    "grill-me asks one question at a time",
+)
+
+# The five differences, as each file states them.
+FIVE_DIFFERENCES = (
+    "overturned if:",
+    "cost:",
+    "one question per message",
+    "cheap",
+    "blocking",
+)
+
+
+@pytest.mark.parametrize("path", ["README.md", "AGENTS.md"])
+def test_the_grill_me_comparison_is_against_the_real_one(path):
+    """grill-me lives in mattpocock/skills, and it now recommends an answer."""
+    text = flat((REPO / path).read_text(encoding="utf-8")).lower()
+    assert GRILL_ME in text, f"{path} does not link mattpocock/skills as grill-me"
+    for claim in STALE_COMPARISON:
+        assert claim not in text, f"{path} still says {claim!r}"
+    for difference in FIVE_DIFFERENCES:
+        assert difference in text, f"{path} no longer names {difference!r}"
+
+
 # --- House style -----------------------------------------------------------
 
 
