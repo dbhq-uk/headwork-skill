@@ -1,7 +1,7 @@
 """Structural tests for the headwork skill.
 
 headwork is instructions, not a program, so these tests assert that SKILL.md
-states its rules and that the two harness paths carry the same parts. They
+states its rules and that both ways of asking carry the same parts. They
 cannot test how a model behaves after reading the file, and they do not pretend
 to. See AGENTS.md, which states that limit rather than hiding it.
 
@@ -11,7 +11,8 @@ The rules under test are the ones in AGENTS.md:
   2. One question per message, then stop - rounds are NOT capped
   3. Every option carries a justification, and every alternative its cost
   3a. The recommendation says what would overturn it
-  4. The two harness paths carry the same six parts
+  4. Both ways of asking - with a question tool and without - carry the same
+     six parts, and the way is chosen by capability, not harness name
   5. Findability is not the only test - consequence is the other one
 
 Plus the three things headwork must never grow: a scanner, write access, state.
@@ -46,6 +47,16 @@ def section(text, heading):
     match = pattern.search(text)
     assert match, f"SKILL.md has no '## {heading}' section"
     return match.group(1).lower()
+
+
+def flat(text):
+    """Text with every run of whitespace collapsed, so a wrapped phrase matches."""
+    return " ".join(text.split())
+
+
+def fenced_blocks(text):
+    """Every fenced code block in text, in order, without its fences."""
+    return re.findall(r"^```[^\n]*\n(.*?)^```", text, re.M | re.S)
 
 
 # --- The manifest and the frontmatter ------------------------------------
@@ -108,11 +119,11 @@ def test_stop_and_wait_is_stated(skill_lower):
 # --- Rule 3: justification per option, cost per alternative ---------------
 
 
-def test_option_bounds_appear_in_both_paths(skill_text):
-    box = section(skill_text, "The question box - Claude Code")
-    fallback = section(skill_text, "The text fallback - Codex and any other harness")
-    for path_name, body in (("box", box), ("fallback", fallback)):
-        assert "two to four options" in body, f"{path_name} lost the option bound"
+def test_option_bounds_are_stated(skill_text):
+    parts = section(skill_text, "The six parts")
+    tool = section(skill_text, "With a question tool")
+    assert "two to four options" in parts, "the six parts lost the option bound"
+    assert "two to four options" in tool, "the tool path lost the option bound"
 
 
 # --- Rule 3a: the recommendation says what would overturn it ---------------
@@ -124,22 +135,15 @@ def test_the_overturn_clause_is_required(skill_lower):
     assert "overturned if:" in skill_lower
 
 
-@pytest.mark.parametrize(
-    "heading",
-    [
-        "The question box - Claude Code",
-        "The text fallback - Codex and any other harness",
-    ],
-)
-def test_the_overturn_clause_appears_in_both_paths(skill_text, heading):
-    body = section(skill_text, heading)
-    assert "overturned if:" in body, f"{heading!r} lost the OVERTURNED IF clause"
+def test_the_overturn_clause_is_in_the_block(skill_text):
+    block = fenced_blocks(section(skill_text, "The six parts"))
+    assert block, "'The six parts' lost its written-out block"
+    assert "overturned if:" in block[0], "the block lost the OVERTURNED IF clause"
 
 
-# --- Rule 4: the two harness paths carry the same parts -------------------
+# --- Rule 4: both ways of asking carry the same parts ----------------------
 
-# The six parts, and a marker that must appear in each harness section. A new
-# harness section added per CONTRIBUTING.md should be added to HARNESS_SECTIONS.
+# The six parts, and a marker that must appear in 'The six parts' section.
 SIX_PARTS = {
     "what you checked": "what you checked",
     "bite-sized explainer": "bite-sized",
@@ -149,9 +153,20 @@ SIX_PARTS = {
     "what would overturn it": "overturn",
 }
 
+# The written-out block carries each part as a token a reader can see.
+BLOCK_TOKENS = {
+    "what you checked": r"^checked: ",
+    "bite-sized explainer": r"^1\. ",
+    "named recommendation, with its justification": r"^recommended: .*reason: ",
+    "what would overturn it": r"^overturned if: ",
+    "an alternative, with its justification and cost": r"^instead: .* - .*cost: ",
+}
+
+# Each way of asking sends the block, so each carries all six parts. A new
+# way of asking added per CONTRIBUTING.md goes in this list.
 HARNESS_SECTIONS = [
-    "The question box - Claude Code",
-    "The text fallback - Codex and any other harness",
+    "With a question tool",
+    "Without a question tool",
 ]
 
 
@@ -161,12 +176,81 @@ def test_the_six_parts_are_stated_once_up_front(skill_text):
         assert marker in parts, f"'The six parts' no longer names {part}"
 
 
+def test_the_block_carries_the_six_parts_in_order(skill_text):
+    block = fenced_blocks(section(skill_text, "The six parts"))[0]
+    positions = []
+    for part, token in BLOCK_TOKENS.items():
+        match = re.search(token, block, re.M)
+        assert match, f"the block is missing {part}"
+        positions.append(match.start())
+    assert positions == sorted(positions), "the block's parts are out of order"
+
+
 @pytest.mark.parametrize("heading", HARNESS_SECTIONS)
 def test_both_paths_carry_the_same_parts(skill_text, heading):
-    """The Codex path is the one at risk - nobody develops this in Codex."""
+    """The no-tool path is the one at risk - nobody develops headwork there.
+
+    Both paths send the same block, so both carry the same six parts. A path
+    that stops sending it has stopped carrying them.
+    """
     body = section(skill_text, heading)
-    missing = [part for part, marker in SIX_PARTS.items() if marker not in body]
-    assert not missing, f"{heading!r} is missing: {', '.join(missing)}"
+    assert "send the block" in flat(body), f"{heading!r} no longer sends the block"
+
+
+def test_the_format_is_chosen_by_capability_not_harness_name(skill_text):
+    body = flat(section(skill_text, "Choosing how to ask"))
+    assert "not by which harness" in body
+    for tool in ("askuserquestion", "request_user_input", "`question`", "ask_user"):
+        assert tool in body, f"'Choosing how to ask' no longer names {tool}"
+    assert "subagent" in body, "the no-tool case inside a tooled harness is gone"
+
+
+@pytest.mark.parametrize(
+    "path", ["skills/headwork/SKILL.md", "README.md", "install-codex.sh", "AGENTS.md"]
+)
+def test_nothing_says_codex_has_no_question_tool(path):
+    """Codex ships request_user_input. Saying otherwise sends it a text menu
+    that its own system prompt forbids."""
+    text = " ".join((REPO / path).read_text(encoding="utf-8").lower().split())
+    for claim in ("codex has none", "codex has no question", "codex has no ask"):
+        assert claim not in text, f"{path} still says {claim!r}"
+
+
+def test_the_tool_path_sets_single_select_and_the_limits(skill_text):
+    """Some hosts default to multi-select, and Codex caps options at three."""
+    body = flat(section(skill_text, "With a question tool"))
+    assert "multiselect: false" in body
+    assert "two to three in codex" in body
+    assert "1-5 words" in body
+    assert "12 characters or fewer" in body
+    assert "(recommended)" in body
+    assert "one question per call" in body
+
+
+def test_the_no_tool_path_is_one_confirming_question(skill_text):
+    """Not a numbered menu: Codex's own prompt forbids a text multiple choice."""
+    body = section(skill_text, "Without a question tool")
+    blocks = fenced_blocks(body)
+    assert len(blocks) == 1, "the no-tool path should show exactly one question line"
+    lines = [line for line in blocks[0].splitlines() if line.strip()]
+    assert len(lines) == 1 and lines[0].rstrip().endswith("?")
+    assert "do not number the options" in flat(body)
+
+
+def test_an_empty_answer_and_a_request_for_more_are_covered(skill_text):
+    body = flat(section(skill_text, "If the answer is empty, or asks for more"))
+    assert "not a choice" in body
+    assert "still ask one" in body
+
+
+def test_worked_example_labels_are_one_to_five_words():
+    """Both question tools ask for option labels of 1-5 words."""
+    text = (SKILL_DIR / "references" / "worked-examples.md").read_text(encoding="utf-8")
+    labels = re.findall(r"^\| \*\*(.+?)\*\* \|", text, re.M)
+    assert labels, "no option labels found in the worked examples"
+    for label in labels:
+        words = label.replace("(Recommended)", "").split()
+        assert 1 <= len(words) <= 5, f"label is {len(words)} words: {label!r}"
 
 
 # --- Rule 5: consequence, not just findability -----------------------------

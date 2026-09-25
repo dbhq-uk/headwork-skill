@@ -13,7 +13,7 @@ last run passed.
 
 **The message:**
 
-> Checked `deploy.yml`, the last ten commits and the three most recent runs -
+> Checked: `deploy.yml`, the last ten commits and the three most recent runs -
 > the cache purge step was added on 16 Sep and has never actually run, because
 > every push since then failed earlier at the build step.
 >
@@ -23,14 +23,35 @@ last run passed.
 >    build worked locally on the same commit.
 > 3. You can fix the variable and find out whether the purge works, or fix the
 >    variable and prove the purge separately first.
+>
+> RECOMMENDED: Fix the variable and push. REASON: the purge step is four lines
+> calling one documented endpoint, and the only thing standing between you and
+> knowing is a green run. Proving it separately costs an hour to learn what one
+> push tells you in ninety seconds.
+> OVERTURNED IF: a failed purge would serve stale files to real traffic rather
+> than to you - then it is worth proving first, because the cost of being wrong
+> stops being ninety seconds.
+> INSTEAD: Prove the purge locally first - runs the purge by hand against the
+> zone before trusting it in CI. COST: an hour, and it does not exercise the CI
+> credentials, which are a different token from the one in your shell - so the
+> thing most likely to break is the thing you would not have tested.
+> INSTEAD: Revert the purge step - gets deploys working again today. COST: stale
+> files at the edge are the exact bug the step was added for on 16 Sep, so this
+> reinstates a known problem to avoid an unknown one.
 
-Then one box:
+Then one call to the question tool, with `multiSelect: false` and the header
+`Deploy fix`. The argument is already in the message, so each description is one
+short sentence:
 
-| | |
+| Label | Description |
 |---|---|
-| **Fix the variable and push (Recommended)** | RECOMMENDED. REASON: the purge step is four lines calling one documented endpoint, and the only thing standing between you and knowing is a green run. Proving it separately costs an hour to learn what one push tells you in ninety seconds. OVERTURNED IF: a failed purge would serve stale files to real traffic rather than to you - then it is worth proving first, because the cost of being wrong stops being ninety seconds. |
-| **Prove the purge locally first** | Runs the purge by hand against the zone before trusting it in CI, so a second failure does not look like the same failure. COST: an hour, and it does not exercise the CI credentials, which are a different token from the one in your shell - so the thing most likely to break is the thing you would not have tested. |
-| **Revert the purge step for now** | Gets deploys working again today and defers the purge. COST: stale files at the edge are the exact bug the step was added for on 16 Sep, so this reinstates a known problem to avoid an unknown one. |
+| **Fix the variable and push (Recommended)** | One push proves the build and the purge together. |
+| **Prove the purge locally first** | Tests the purge by hand before CI relies on it. |
+| **Revert the purge step** | Gets deploys working today and puts the purge off. |
+
+With no question tool, the same message ends with one line instead of the call:
+
+> Go with fixing the variable and pushing?
 
 Then stop and wait. If the answer turns out to reveal a second decision, that is
 a new round in its own message - not an addition to this one.

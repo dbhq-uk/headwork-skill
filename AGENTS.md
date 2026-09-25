@@ -83,18 +83,23 @@ machine.
 It also bites hardest where the decision feels unimportant, which is why rule 5
 exists.
 
-### 4. The two harness paths carry the same parts
+### 4. Both ways of asking carry the same parts
 
-Claude Code gets a question box; Codex and anything else gets the specified text
-block. Both carry all six parts: the checked line, the bite-sized explainer,
-the options, a justification per option, a named recommendation, and what would
-overturn it.
+The way of asking is chosen by capability, not by harness name. With a question
+tool in the tool list, the agent sends the written-out block and then calls the
+tool. Without one, it sends the same block and asks one plain-text question that
+confirms the recommendation. Both carry all six parts: the checked line, the
+bite-sized explainer, the options, a justification per option, a named
+recommendation, and what would overturn it.
 
-The Codex path exists because it was asked for over a recommendation to ship
-Claude Code only. That makes it more at risk of rotting, not less - nobody
-developing this runs it in Codex daily. The test asserting both sections carry
-all six parts is the only thing holding it, so do not delete it when it becomes
-inconvenient.
+Do not go back to choosing by name. Codex, OpenCode and Gemini CLI all have a
+question tool now, and Codex's own prompt forbids the numbered text menu this
+skill used to send it. A Claude Code subagent, meanwhile, has no question tool
+at all.
+
+The no-tool path is the one more at risk of rotting - nobody developing this
+runs it that way daily. The test asserting both paths send the block is the only
+thing holding it, so do not delete it when it becomes inconvenient.
 
 ### 5. Findability is not the only test - consequence is the other one
 
@@ -137,7 +142,7 @@ python3 -m pytest skills/headwork/tests -q
 ```
 
 Python 3.9 or newer, standard library plus pytest. The tests are **structural** -
-they assert that `SKILL.md` states the rules, that both harness paths carry the
+they assert that `SKILL.md` states the rules, that both ways of asking carry the
 same parts, and that nothing writes state. They cannot test the behaviour of a
 model reading the file, and they do not pretend to.
 

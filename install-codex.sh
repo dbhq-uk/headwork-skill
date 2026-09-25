@@ -4,9 +4,11 @@
 # Codex does not substitute ${CLAUDE_SKILL_DIR}, so SKILL.md is rewritten with
 # the real installed path and the subdirectories are symlinked alongside it.
 #
-# Codex has no question-box tool. headwork ships a specified text fallback for
-# exactly this case - the same five parts in a fixed block, one decision per
-# turn. See "The text fallback" in SKILL.md.
+# headwork chooses how to ask by what the tools can do. Codex's question tool,
+# request_user_input, is on in Plan mode, and in Default mode only behind the
+# default_mode_request_user_input flag. Where it is missing, headwork asks one
+# plain-text question instead - the same six parts either way, one decision
+# per turn. See "Choosing how to ask" in SKILL.md.
 
 set -e
 
@@ -36,9 +38,10 @@ done
 echo
 echo "Installed for Codex."
 echo
-echo "Codex has no question box, so headwork uses its text fallback: the same"
-echo "explainer, the same justified options, the recommendation named first,"
-echo "one decision per turn."
+echo "headwork uses Codex's question tool where it is on (Plan mode, or Default"
+echo "mode with the default_mode_request_user_input flag), and asks in plain"
+echo "text where it is not. Same explainer, same justified options, the"
+echo "recommendation named first, one decision per turn."
 echo
 echo "headwork stores nothing - no credentials, no config, no state directory."
 echo
