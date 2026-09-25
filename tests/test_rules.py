@@ -123,6 +123,19 @@ def test_when_not_to_use_routes_elsewhere(skill_text):
         assert skill in body, f"'When not to use' no longer names {skill}"
 
 
+# SKILL.md is read on every invocation, and a rule buried under three screens
+# of prose is a rule that does not fire. It was 1,793 words before the cut.
+WORD_LIMIT = 1000
+
+
+def test_skill_md_stays_short(skill_text):
+    words = len(skill_text.split())
+    assert words <= WORD_LIMIT, (
+        f"SKILL.md is {words} words, over {WORD_LIMIT}. Cut rationale before rules: "
+        "the why belongs in AGENTS.md, the pitch in README.md."
+    )
+
+
 # --- Rule 1: never ask what you can find out -----------------------------
 
 
@@ -365,14 +378,18 @@ NUMBER_WORDS = ("one", "two", "three", "four", "five", "six", "seven", "eight", 
 
 
 def test_every_count_of_the_parts_is_right(skill_text):
-    """install-codex.sh kept the old count after a sixth part was added."""
-    body = section(skill_text, "The six parts")
-    count = len(re.findall(r"^\d+\. ", body.split("```")[0], re.M))
+    """install-codex.sh kept the old count after a sixth part was added. The
+    heading in SKILL.md is the count, and the checker holds the block to it;
+    every other file has to agree."""
+    heading = re.search(r"^## The (\w+) parts\s*$", skill_text, re.M)
+    assert heading, "SKILL.md lost its 'The N parts' section"
+    count = heading.group(1).lower()
+    assert count in NUMBER_WORDS, f"'The {count} parts' is not a count"
     for path in repo_files(".md", ".sh", ".py", ".json"):
         text = flat(path.read_text(encoding="utf-8").lower())
         for word in re.findall(r"\b(" + "|".join(NUMBER_WORDS) + r") parts\b", text):
-            assert NUMBER_WORDS.index(word) + 1 == count, (
-                f"{path.relative_to(REPO)} says {word} parts; SKILL.md lists {count}"
+            assert word == count, (
+                f"{path.relative_to(REPO)} says {word} parts; SKILL.md says {count}"
             )
 
 
