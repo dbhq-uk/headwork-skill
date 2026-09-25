@@ -6,25 +6,43 @@ the behaviour.
 
 ## The thing that makes this skill worth having
 
-Not the question box, and **not the look-first rule** - that was the original
-answer here and it was wrong.
+Not the question box, not the look-first rule, and **not the recommendation on
+its own**. Each of those has been the answer here, and each is now common.
 
-[`RobMitt/grill-me-skill`](https://github.com/RobMitt/grill-me-skill) is 613
-stars and 21 lines, and it already says "Ask **one question at a time**", "2-4
-concrete multiple-choice options", and "If a question can be answered by
-exploring the codebase or files, explore them yourself instead of asking the
-user". Three of this skill's rules, shipped earlier, to a far larger audience.
-`TexasBedouin/vibe-check` holds 603 stars beside it. The sweep before the build
-established the *word* `headwork` was unheld; it never asked whether the *idea*
-was. Evidence:
-[`Headwork_Improvement_Research_20260918`](https://github.com/dbhq-uk/dbhq) in
-the private `dbhq` repo.
+The skill to compare against is `grill-me` in
+[`mattpocock/skills`](https://github.com/mattpocock/skills). It hands off to
+the same repo's
+[`grilling`](https://github.com/mattpocock/skills/blob/main/skills/productivity/grilling/SKILL.md)
+skill, which maps a plan as a tree of decisions and works it in rounds. Each
+round asks every question whose prerequisites are settled, all at once, each
+with a recommended answer. It sends a subagent to find facts rather than asking
+the user for them. It is done when no questions are left, and it does not act
+until the user confirms they share an understanding.
 
-What headwork actually has is the **argued recommendation**: one option named
-as the recommendation, with its reason, and a clause saying what would overturn
-it. Neither leading competitor's skill file contains the word "recommend" at
-all. That is the part worth installing something for, and the part every change
-has to leave standing.
+It is not alone in recommending. `superpowers:brainstorming` says to lead with
+the recommended option, and the question tools in Claude Code and Codex both ask
+for the recommended option first, marked "(Recommended)". Looking before asking
+and naming a recommendation are table stakes.
+
+(An earlier version of this file compared headwork with
+`RobMitt/grill-me-skill`. That is a short copy, not the original, and the
+comparison built on it was wrong.)
+
+What headwork has that the others do not, and what every change has to leave
+standing:
+
+1. **The recommendation says what would overturn it.** An `OVERTURNED IF:`
+   clause, naming the condition under which another option is right. grilling's
+   recommended answer carries no stated escape. Rule 3a.
+2. **Every alternative names its cost.** A `COST:` on each option that is not
+   the recommendation. Rule 3.
+3. **One question per message.** grilling asks a whole round at once. Rule 2.
+4. **It refuses to spend a question on a cheap, reversible decision.** grilling
+   aims to leave nothing assumed; headwork decides small things and says so.
+   Rule 5.
+5. **It works on the one decision blocking the work right now.** grilling maps
+   the whole plan. headwork takes what is stopping the session and leaves the
+   rest until it blocks.
 
 The best outcome headwork can produce is still **no question at all** - it
 looked, the answer was in the repo, and it said so. A change that makes a
