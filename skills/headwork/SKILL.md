@@ -216,6 +216,7 @@ rather than ask:
 
 ## Worked examples
 
-See [`references/worked-examples.md`](references/worked-examples.md) for five -
+See [`references/worked-examples.md`](references/worked-examples.md) for seven -
 one normal round, two refusals, one where looking first removed the question
-entirely, and a two-round session that ends in a recap.
+entirely, a two-round session that ends in a recap, a round with no question
+tool, and a recommendation overturned by its own clause.

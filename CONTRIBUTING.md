@@ -28,16 +28,13 @@ real and is stated in `AGENTS.md` rather than papered over. The prompt cases in
 
 ## The most useful contribution
 
-**A worked example of a recommendation being overturned by its own clause.**
-`skills/headwork/references/worked-examples.md` has four rounds but none yet
-where the user reads the `OVERTURNED IF:` condition, knows it holds, and picks
-something else. That is the clause working, and it is the hardest part of the
-skill to teach from an example where the recommendation simply wins.
+**A real reply, saved.** Run one of the cases in `evals/` against a real model
+and save the reply in `tests/transcripts/`, as `evals/README.md` describes.
+Each one holds the checker to real output rather than to fixtures written for
+it. A reply that fails the checker is worth an issue instead.
 
-Also welcome: a case where looking first turned a decision into a fact, which is
-the look-first rule deleting a question rather than dressing one. And a real
-reply, run from one of the cases in `evals/` and saved in `tests/transcripts/`,
-which holds the checker to real output rather than to fixtures.
+Also welcome: a worked example where looking first turned a decision into a
+fact, which is the look-first rule deleting a question rather than dressing one.
 
 Second most useful: **a question tool's limits**. If you use headwork with a
 question tool that `SKILL.md` does not name, or one whose limits differ from the
