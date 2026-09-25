@@ -434,8 +434,8 @@ def test_every_count_of_the_parts_is_right(skill_text):
 
 
 def test_agents_md_names_the_right_refusal_case(skill_text):
-    """AGENTS.md called the consequence rule the fourth refusal case. It is the
-    third, and a renumbering sends a reader to the wrong one."""
+    """AGENTS.md gave the consequence rule the wrong number among the refusal
+    cases. It is the third, and a wrong number sends a reader to another one."""
     agents = flat((REPO / "AGENTS.md").read_text(encoding="utf-8").lower())
     said = re.search(r"this is the (\w+) refusal case", agents)
     assert said, "AGENTS.md no longer points rule 5 at its refusal case"
