@@ -282,6 +282,18 @@ def test_rounds_are_not_capped(skill_lower):
     assert "no cap" in skill_lower
 
 
+def test_the_session_acts_on_the_answer_before_the_next_round(skill_text):
+    """Read literally, "hand the answer back" and "never edits" could mean the
+    agent never acts, or asks the next question before doing the work."""
+    body = section(skill_text, "A round, exactly")
+    step = re.search(r"^6\. (.*?)(?=^\S|\Z)", body, re.M | re.S)
+    assert step, "'A round, exactly' has no step 6"
+    step = flat(step.group(1))
+    assert "carry out the chosen option" in step
+    assert "before any next round" in step
+    assert "only if another decision blocks" in step
+
+
 def test_the_session_has_a_done_condition(skill_lower):
     """Uncapped is not endless: an agent can always find one more question."""
     text = flat(skill_lower)
