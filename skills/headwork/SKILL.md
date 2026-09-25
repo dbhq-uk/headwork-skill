@@ -58,7 +58,7 @@ honestly without having looked, and the user can see it failing.
 3. **Explain in bite-sized chunks.** Two to four short numbered points in plain
    English. The user must understand the decision before being asked to make it.
    Not background - just enough that the options mean something.
-4. **Ask one question**, in the format below for the harness you are in.
+4. **Ask one question**, in the format below for the tools you have.
 5. **Stop and wait.** No second question in the same message. No closing "and
    also". No "let me know if you'd like me to...".
 6. **Hand the answer back to the session**, which does the work. `headwork`
@@ -75,7 +75,7 @@ ignored or answered badly. Rounds are unlimited; questions per message are not.
 
 ## The six parts
 
-Every question carries all six, in this order, in every harness:
+Every question carries all six, in this order, however it is asked:
 
 1. **What you checked** - the sources, and anything they already settle.
 2. **A bite-sized explainer** - two to four short numbered points.
@@ -86,58 +86,71 @@ Every question carries all six, in this order, in every harness:
 6. **What would overturn the recommendation** - the condition that would make a
    different option right.
 
-## The question box - Claude Code
-
-Use `AskUserQuestion`. One question per call, never more, even though the tool
-accepts up to four.
-
-- **What you checked** and the **bite-sized explainer** go in the chat message
-  immediately before the call, not inside the box. The box is the question; the
-  message is what makes it answerable.
-- **Two to four options.** Fewer than two is not a decision. More than four is a
-  menu, and the tool caps it there anyway.
-- **A named recommendation, first.** Its label ends `(Recommended)`. Its
-  description opens with `RECOMMENDED.` then `REASON:` and the reason.
-- **What would overturn it**, in the same description, introduced by
-  `OVERTURNED IF:`. One clause naming the condition under which a different
-  option wins.
-- **A justification per option** - what it gets you, in its own description, not
-  inferable from the label.
-- **Every option that is not the recommendation names its cost**, introduced by
-  `COST:`. An option with no stated downside has not been thought about.
-- **Keep the header under 12 characters** and make it the subject of the
-  decision, not the word "Option".
-
-The user always gets an "Other" escape from the tool itself, so do not spend one
-of your four options on "something else".
-
-## The text fallback - Codex and any other harness
-
-No question-box tool means the same six parts in a fixed block. Do not
-improvise a different shape each time, and do not fall back to prose:
+Written out, they are this block:
 
 ```
 Checked: <sources, and what they already settle>
 
-<bite-sized explainer: 2 to 4 numbered points>
+1. <explainer point>
+2. <explainer point>
 
-  1. <label> - RECOMMENDED. REASON: <justification>
-     OVERTURNED IF: <the condition that makes another option right>
-  2. <label> - <justification>. COST: <what it gives up>
-  3. <label> - <justification>. COST: <what it gives up>
-
-Reply with a number, or say what you would rather do.
+RECOMMENDED: <option>. REASON: <justification>.
+OVERTURNED IF: <the condition that makes another option right>.
+INSTEAD: <option> - <justification>. COST: <what it gives up>.
 ```
 
-The `Checked:` line is **what you checked**, and it opens the block - there is
-no separate message here to put it in. Then the **bite-sized explainer**. Then
-**two to four options**, the same bound as the box, with **a named
-recommendation** first marked `RECOMMENDED.`, its **`OVERTURNED IF:`** clause
-saying **what would overturn it**, **a justification per option**, and a
-`COST:` on every alternative.
+One to three `INSTEAD:` lines, so two to four options in all. An option with
+no stated downside has not been thought about.
 
-One question per turn, then stop and wait. The last line is the escape hatch the
-box would have given for free.
+## Choosing how to ask
+
+Choose by what your tools can do, not by which harness you are in. If a
+question tool is in your tool list, use it. If not, ask in plain text.
+
+Claude Code has `AskUserQuestion`, Codex has `request_user_input`, OpenCode has
+`question` and Gemini CLI has `ask_user`. But a subagent, a background agent or
+`codex exec` often has none, even inside a harness that does. Codex offers its
+tool in Plan mode, and in Default mode only behind a feature flag.
+
+## With a question tool
+
+Send the block as the message, then call the tool. The block carries the
+argument because the tool's fields are too short to. One question per call,
+never more, even when the tool accepts several.
+
+- **`multiSelect: false`.** One decision has one answer, and some hosts default
+  to multi-select.
+- **Two to four options** in Claude Code. **Two to three in Codex**, which caps
+  it there: with four, drop the weakest alternative from the block and the
+  call. Keep within any other tool's own limit.
+- **Labels of 1-5 words**, the same as in the block. The recommendation goes
+  first, its label ending `(Recommended)`.
+- **A justification per option** in its description: one short sentence on what
+  choosing it gets you.
+- **A header of 12 characters or fewer** in both tools, naming the subject of
+  the decision, not the word "Option".
+- **No "Other" option.** The tool adds its own.
+
+## Without a question tool
+
+Send the block, then one line asking the user to confirm the recommendation:
+
+```
+Go with <option>?
+```
+
+That line is the question, and the message ends there. Do not number the
+options and ask for a pick: that is a form, and Codex's own instructions forbid
+a multiple-choice question written as text. A yes, the name of an alternative,
+or something else entirely are all answers.
+
+## If the answer is empty, or asks for more
+
+- **An empty or dismissed answer is not a choice.** Do not take it as agreement
+  with the recommendation, and do not ask again in the same turn. Say in one
+  line that the decision is still open, then stop.
+- **Asked for more questions at once, still ask one.** Say in one line how many
+  remain and what each is about, then ask the one blocking the work.
 
 ## Refusal is a correct result
 

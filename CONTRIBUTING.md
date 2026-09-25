@@ -17,9 +17,9 @@ python3 -m pytest skills/headwork/tests -q
 Python 3.9 or newer, standard library plus pytest. No credentials, no network,
 nothing to install.
 
-The tests are structural: they assert `SKILL.md` states its rules, that the
-Claude Code and Codex paths carry the same six parts, and that nothing writes
-state. They cannot test how a model behaves after reading the file. That limit
+The tests are structural: they assert `SKILL.md` states its rules, that asking
+with a question tool and asking without one carry the same six parts, and that
+nothing writes state. They cannot test how a model behaves after reading the file. That limit
 is real and is stated in `AGENTS.md` rather than papered over.
 
 ## The most useful contribution
@@ -33,10 +33,10 @@ skill to teach from an example where the recommendation simply wins.
 Also welcome: a case where looking first turned a decision into a fact, which is
 the look-first rule deleting a question rather than dressing one.
 
-Second most useful: **a harness path**. If you use headwork somewhere with its
-own structured-input mechanism, the text fallback probably is not the best it
-can do. Add a section to `SKILL.md` carrying the same six parts, and extend
-`test_both_paths_carry_the_same_parts` to cover it.
+Second most useful: **a question tool's limits**. If you use headwork with a
+question tool that `SKILL.md` does not name, or one whose limits differ from the
+ones in "With a question tool", add them there and extend
+`test_the_tool_path_sets_single_select_and_the_limits` to cover them.
 
 ## Style
 

@@ -28,7 +28,7 @@ weighing them still entirely yours. headwork always picks one, gives the reason,
 and then - the part that matters - says what would make a different option
 right.
 
-> **RECOMMENDED.** REASON: the purge step is four lines calling one documented endpoint, and one push tells you in ninety seconds what an hour of local proving would.
+> **RECOMMENDED:** Fix the variable and push. REASON: the purge step is four lines calling one documented endpoint, and one push tells you in ninety seconds what an hour of local proving would.
 > **OVERTURNED IF:** a failed purge would serve stale files to real traffic rather than to you.
 
 That last clause is deliberate. A recommendation with no stated escape is an
@@ -128,10 +128,21 @@ Nothing to configure. No dependencies, no credentials, no state directory.
 
 ## Codex and other harnesses
 
-The question box is a Claude Code tool. Codex has none, so headwork ships a
-**specified** text fallback rather than an improvised one - the same six parts
-in a fixed block, one question per turn, then stop and wait. The two paths are
-held in step by test, so the Codex side cannot quietly rot into prose.
+headwork picks how to ask by what the agent's tools can do, not by the name of
+the harness. Where there is a question tool - `AskUserQuestion` in Claude Code,
+`request_user_input` in Codex, `question` in OpenCode, `ask_user` in Gemini
+CLI - it uses it, within that tool's limits. Codex, for one, allows three
+options rather than four.
+
+Where there is none, it asks one plain-text question that confirms the
+recommendation, rather than a numbered menu. That covers a subagent, a
+background agent and `codex exec`. It is also most Codex sessions: Codex offers
+its tool in Plan mode, and in Default mode only behind the
+`default_mode_request_user_input` feature flag.
+
+Both ways send the same six parts in the same block, one question per message,
+then stop and wait. A test holds them in step, so neither can quietly rot into
+prose.
 
 ## Using it
 
