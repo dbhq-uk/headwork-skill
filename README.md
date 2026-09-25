@@ -61,7 +61,8 @@ something up does not make it worth interrupting you for.
    with what would overturn it, every option carrying its justification and
    every alternative its cost.
 5. **Stop and wait.** No second question, no trailing "and also".
-6. **Hand the answer back** to the session, which does the work.
+6. **Act on the answer** - the session carries out the chosen option as normal
+   work, then starts a new round only if another decision blocks it.
 
 Then it goes again, for **as many rounds as it takes to unblock you**. There is
 no cap. What is capped is questions per message: one, then silence. It is done

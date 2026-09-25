@@ -61,8 +61,9 @@ honestly without having looked, and the user can see it failing.
 4. **Ask one question**, in the format below for the tools you have.
 5. **Stop and wait.** No second question in the same message. No closing "and
    also". No "let me know if you'd like me to...".
-6. **Hand the answer back to the session**, which does the work. `headwork`
-   itself edits nothing.
+6. **Carry out the chosen option as normal work, before any next round.** That
+   is the session doing its job with its own tools, not headwork writing
+   anything. Start a new round only if another decision blocks the work.
 
 Then **go again, for as many rounds as it takes to unblock the user.** There is
 no cap and no stopping after one: if settling the first decision reveals a
@@ -189,7 +190,8 @@ rather than ask:
 
 - **Never scans for work.** No backlog sweep, no stalled-item hunt. Something
   else does that.
-- **Never edits anything.** It decides; the session acts.
+- **Never edits anything.** It decides; the session acts on the answer as
+  normal work, as step 6 says.
 - **Never keeps state.** No files, no log, no directory of its own. The
   reasoning belongs in what the answer produces - the commit message, the pull
   request body, or the register the repo already keeps. A second register is how
