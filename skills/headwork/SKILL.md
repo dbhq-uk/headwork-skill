@@ -2,14 +2,15 @@
 name: headwork
 description: >-
   Think a decision through, one question at a time, with a recommendation you
-  can argue with. When the user is stuck or deciding what comes next, headwork
-  explains the decision in plain English, then asks a single question whose
-  options each carry their justification, names one of them as the
+  can argue with. When the user is stuck between options on the work in hand,
+  headwork explains the decision in plain English, then asks a single question
+  whose options each carry their justification, names one of them as the
   recommendation, and says what would overturn it - and it never asks what it
-  could have looked up. Use when the user says "headwork", "I'm stuck", "what's
-  next", "how do I move this forward", "unblock me", "unblock this", "which
-  way", "help me decide", "I can't decide", "what should I do here", or "talk
-  me through the options".
+  could have looked up. Use when the user says "headwork", "I'm stuck between",
+  "stuck on which", "how do I move this forward", "unblock me", "unblock this",
+  "which way", "help me decide", "I can't decide", "what should I do here", or
+  "talk me through the options". Not for designing something new,
+  stress-testing a whole plan, or picking the next issue.
 license: MIT
 ---
 
@@ -20,6 +21,20 @@ The mental work of thinking something through, done one question at a time.
 headwork does not find the work and it does not do the work. It takes the
 decision blocking the session right now, explains it, and puts it to the user as
 one question they can answer by **choosing** rather than by composing.
+
+## When not to use
+
+headwork is for one decision blocking the work in hand. When the request is
+something else, one of these fits better, where it is installed:
+
+- **Designing a new thing** - `superpowers:brainstorming`.
+- **Stress-testing a whole plan** - grill-me, from
+  [`mattpocock/skills`](https://github.com/mattpocock/skills).
+- **An independent model's view** - `groupwork`.
+- **Which issue comes next** - `deskwork`.
+- **A stalled Trello board** - `life-manager`.
+- **Stuck on a failing problem rather than a choice** -
+  `superpowers:systematic-debugging` or `paseo-committee`.
 
 ## What makes this more than a well-formatted question
 

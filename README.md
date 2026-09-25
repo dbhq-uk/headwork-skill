@@ -160,14 +160,18 @@ prose.
 
 ## Using it
 
-It fires on its own when you say you are stuck, ask what comes next, or ask to
-be unblocked. You can also call it directly:
+It fires on its own when you say you are stuck between options, cannot decide,
+or ask to be unblocked. You can also call it directly:
 
 ```
 /headwork
 ```
 
 There is nothing to pass it. It reads what the session is already working on.
+
+It is for one decision in the work in hand. Designing something new, testing a
+whole plan, picking the next issue or chasing a failing test each have a better
+tool, and `SKILL.md` names them under "When not to use".
 
 ## Also from DBHQ
 

@@ -70,16 +70,53 @@ def test_frontmatter_name_matches_directory(skill_text):
     assert name.group(1) == SKILL_DIR.name
 
 
-def test_description_names_the_trigger_phrases(skill_text):
-    """The description is the auto-trigger. If the phrases go, it never fires.
+def description(skill_text):
+    """The frontmatter description, lower case, whitespace collapsed.
 
-    Whitespace is collapsed first: the description is a folded YAML block, so a
-    phrase can land either side of a line break and still be one phrase.
+    The description is a folded YAML block, so a phrase can land either side of
+    a line break and still be one phrase.
     """
     match = re.match(r"^---\n(.*?)\n---", skill_text, re.S)
-    description = " ".join(match.group(1).lower().split())
-    for phrase in ("stuck", "what's next", "unblock", "decide"):
-        assert phrase in description, f"description no longer triggers on {phrase!r}"
+    return flat(match.group(1).lower())
+
+
+def test_description_names_the_trigger_phrases(skill_text):
+    """The description is the auto-trigger. If the phrases go, it never fires."""
+    for phrase in ("stuck between", "unblock", "decide"):
+        assert phrase in description(skill_text), f"description no longer triggers on {phrase!r}"
+
+
+def test_description_does_not_claim_other_skills_triggers(skill_text):
+    """"what's next" asks for a backlog read, which headwork never does, and a
+    bare "stuck" is claimed by debugging and board skills. Stuck is only ours
+    when it is stuck between choices."""
+    text = description(skill_text)
+    assert "what's next" not in text
+    assert "what comes next" not in text
+    for match in re.finditer(r"stuck\b(.{0,12})", text):
+        assert match.group(1).lstrip().startswith(("between", "on which")), (
+            f"'stuck' used outside decision phrasing: {match.group(0)!r}"
+        )
+
+
+@pytest.mark.parametrize("path", ["README.md", "install.sh"])
+def test_nothing_says_it_fires_on_what_comes_next(path):
+    text = flat((REPO / path).read_text(encoding="utf-8").lower())
+    assert "what comes next" not in text, f"{path} still says it fires on what comes next"
+
+
+def test_when_not_to_use_routes_elsewhere(skill_text):
+    body = section(skill_text, "When not to use")
+    for skill in (
+        "superpowers:brainstorming",
+        "mattpocock/skills",
+        "groupwork",
+        "deskwork",
+        "life-manager",
+        "systematic-debugging",
+        "paseo-committee",
+    ):
+        assert skill in body, f"'When not to use' no longer names {skill}"
 
 
 # --- Rule 1: never ask what you can find out -----------------------------

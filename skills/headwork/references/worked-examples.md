@@ -6,8 +6,8 @@ one round, and how it ends.
 
 ## 1. A normal round
 
-The user has been editing a deploy workflow and says "right, I'm stuck - what's
-next here?"
+The user has been editing a deploy workflow and says "right, I'm stuck on which
+way to take this".
 
 **Look:** `git log -10`, the workflow file, and `gh run list` for whether the
 last run passed.
