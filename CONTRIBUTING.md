@@ -19,8 +19,12 @@ nothing to install.
 
 The tests are structural: they assert `SKILL.md` states its rules, that asking
 with a question tool and asking without one carry the same six parts, and that
-nothing writes state. They cannot test how a model behaves after reading the file. That limit
-is real and is stated in `AGENTS.md` rather than papered over.
+nothing writes state. `tests/roundcheck.py` checks the shape of every saved
+round: the worked examples and the real replies in `tests/transcripts/`.
+
+None of that can test how a model behaves after reading the file. That limit is
+real and is stated in `AGENTS.md` rather than papered over. The prompt cases in
+`evals/` are for that, run by hand.
 
 ## The most useful contribution
 
@@ -31,11 +35,14 @@ something else. That is the clause working, and it is the hardest part of the
 skill to teach from an example where the recommendation simply wins.
 
 Also welcome: a case where looking first turned a decision into a fact, which is
-the look-first rule deleting a question rather than dressing one.
+the look-first rule deleting a question rather than dressing one. And a real
+reply, run from one of the cases in `evals/` and saved in `tests/transcripts/`,
+which holds the checker to real output rather than to fixtures.
 
 Second most useful: **a question tool's limits**. If you use headwork with a
 question tool that `SKILL.md` does not name, or one whose limits differ from the
-ones in "With a question tool", add them there and extend
+ones in "With a question tool", add them there and to `TOOLS` in
+`tests/roundcheck.py`, and extend
 `test_the_tool_path_sets_single_select_and_the_limits` to cover them.
 
 ## Style
