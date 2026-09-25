@@ -51,8 +51,7 @@ is the wrong change however good the box looks.
 
 ## The rules
 
-Each has tests in `skills/headwork/tests/`. Do not weaken one to make something
-else easier.
+Each has tests in `tests/`. Do not weaken one to make something else easier.
 
 ### 1. Never ask what you can find out
 
@@ -87,8 +86,10 @@ conversation. Not in a file: the no-state rule below still holds.
 ### 3. Every option carries a justification, and every alternative its cost
 
 An option with a bare label is not an option, it is a word to pick between. An
-option with no stated downside has not been thought about. The recommendation
-goes first, labelled, with its reason - and it names what it costs too.
+alternative with no stated downside has not been thought about. The
+recommendation goes first, labelled, with its reason, and with no `COST:` line.
+What it gives up is stated as its `OVERTURNED IF:` clause instead (rule 3a):
+the condition under which it is the wrong choice.
 
 ### 3a. The recommendation says what would overturn it
 
@@ -139,7 +140,7 @@ agents on *redundant questions asked* - a question is a cost, not free
 insurance.
 
 Ask when the decision is expensive, hard to reverse, or genuinely the user's to
-make. This is the fourth refusal case in `SKILL.md`.
+make. This is the third refusal case in `SKILL.md`.
 
 ## What headwork must never grow
 
@@ -161,7 +162,7 @@ it.
 ## Running the tests
 
 ```bash
-python3 -m pytest skills/headwork/tests -q
+python3 -m pytest tests -q
 ```
 
 Python 3.9 or newer, standard library plus pytest. The tests are **structural** -

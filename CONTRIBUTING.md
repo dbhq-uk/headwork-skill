@@ -11,7 +11,7 @@ however convenient - they are the difference between a skill and a prompt.
 ## Running the tests
 
 ```bash
-python3 -m pytest skills/headwork/tests -q
+python3 -m pytest tests -q
 ```
 
 Python 3.9 or newer, standard library plus pytest. No credentials, no network,
