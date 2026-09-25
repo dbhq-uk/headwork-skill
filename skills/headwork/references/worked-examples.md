@@ -1,7 +1,8 @@
 # Worked examples
 
-Four rounds. The last is the one that matters most, because the best outcome is
-often that the question disappears.
+Five examples. The fourth is the one that matters most, because the best outcome
+is often that the question disappears. The fifth shows a session of more than
+one round, and how it ends.
 
 ## 1. A normal round
 
@@ -110,6 +111,87 @@ Do not ask. The answer is in the repo:
 A question box here would have been the skill working exactly as designed and
 still being useless. The look-first rule exists to catch this case, and catching
 it is worth more than any well-formatted question.
+
+## 5. Two rounds, then a recap
+
+The user maintains a command-line tool and wants to rename its `--out` flag to
+`--output`. They say "I can't decide how to do this rename".
+
+**Look:** the argument parser, the README, `CHANGELOG.md` and the release tags.
+
+**Round one:**
+
+> Checked: `cli.py`, the README, `CHANGELOG.md` and the release tags - `--out`
+> has been in every release since 1.0, the README uses it in four examples, and
+> the changelog says the project follows semantic versioning.
+>
+> 1. Removing a flag breaks every script that passes it, so under semantic
+>    versioning an outright rename needs a 3.0.
+> 2. Keeping `--out` as an alias costs a few lines in the parser and no new
+>    major version.
+> 3. The alias can print a warning, so users learn the new name before the old
+>    one goes.
+>
+> RECOMMENDED: Keep a warning alias. REASON: it ships in a minor release,
+> breaks nobody, and the warning teaches the new name where the changelog
+> cannot.
+> OVERTURNED IF: a 3.0 is already planned with other breaking changes - then
+> rename outright and let it ride along with them.
+> INSTEAD: Rename outright - one name everywhere and a cleaner parser. COST:
+> every script using `--out` breaks, and it forces a major release for one flag.
+> INSTEAD: Keep a silent alias - nothing breaks and nothing nags. COST: nobody
+> learns the new name, so the alias can never be removed.
+
+Then one call, header `Flag rename`, `multiSelect: false`:
+
+| Label | Description |
+|---|---|
+| **Keep a warning alias (Recommended)** | Ships in a minor release and breaks nobody. |
+| **Rename outright** | One name everywhere, in a major release. |
+| **Keep a silent alias** | Nothing breaks and nothing nags. |
+
+The user picks the warning alias. The session adds `--output`, keeps `--out`
+as an alias that warns, and updates the tests and the README. Writing the
+warning text turns up one more decision: it has to say when the alias goes.
+
+**Round two:**
+
+> One decision left, then this is done.
+>
+> Checked: `CHANGELOG.md` and the open milestones - there is no 3.0 milestone
+> and nothing else is deprecated, so no removal date is already set.
+>
+> 1. A warning with no end date teaches users to ignore it.
+> 2. Tying the removal to a version is predictable. Tying it to a date is
+>    easier to state, but releases here are irregular.
+>
+> RECOMMENDED: Remove it in 3.0. REASON: semantic versioning already tells users
+> that a major release breaks things, so the warning can name a version they
+> will see coming.
+> OVERTURNED IF: 3.0 is likely to be more than a year away - then a date keeps
+> the alias from living for ever.
+> INSTEAD: Remove it after six months - a fixed end the warning can print.
+> COST: the removal would land in a minor release, which is the break the alias
+> exists to avoid.
+
+Then one call, header `Alias end`, `multiSelect: false`:
+
+| Label | Description |
+|---|---|
+| **Remove it in 3.0 (Recommended)** | The warning names the version it goes in. |
+| **Remove after six months** | A fixed end date, whatever the version. |
+
+The user picks 3.0. The session writes the warning text and the changelog
+entry. Nothing else needs a decision from the user, so the session is done, and
+it ends with the recap:
+
+> Decided:
+> - `--out` stays as an alias that warns, so the rename ships in a minor
+>   release and breaks nobody.
+> - The alias goes in 3.0, and the warning says so.
+
+The recap is part of the conversation. It is not written to a file, and the
+reasoning it summarises belongs in the commit message.
 
 ## The anti-pattern
 

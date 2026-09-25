@@ -238,7 +238,7 @@ def test_the_no_tool_path_is_one_confirming_question(skill_text):
 
 
 def test_an_empty_answer_and_a_request_for_more_are_covered(skill_text):
-    body = flat(section(skill_text, "If the answer is empty, or asks for more"))
+    body = flat(section(skill_text, "Taking the answer"))
     assert "not a choice" in body
     assert "still ask one" in body
 
@@ -280,6 +280,30 @@ def test_rounds_are_not_capped(skill_lower):
     """Dan, 18 Sep 2026: keep going for as many rounds as it takes."""
     assert "as many rounds as it takes" in skill_lower
     assert "no cap" in skill_lower
+
+
+def test_the_session_has_a_done_condition(skill_lower):
+    """Uncapped is not endless: an agent can always find one more question."""
+    text = flat(skill_lower)
+    assert "done when the work can take its next action without another decision" in text
+    assert "one line per decision" in text
+    assert "recap lives in the conversation, not in a file" in text
+
+
+def test_every_kind_of_answer_is_covered(skill_text):
+    body = flat(section(skill_text, "Taking the answer"))
+    for case in ("against the recommendation", '"just pick"', '"other" answer', "no answer"):
+        assert case in body, f"'Taking the answer' no longer covers {case}"
+    assert "do not argue it again" in body
+
+
+def test_a_worked_example_runs_several_rounds_and_ends_in_a_recap():
+    text = (SKILL_DIR / "references" / "worked-examples.md").read_text(encoding="utf-8")
+    sessions = [s for s in re.split(r"^## ", text, flags=re.M) if "Decided:" in s]
+    assert sessions, "no worked example ends with a recap"
+    session = sessions[0]
+    assert len(re.findall(r"^> RECOMMENDED: ", session, re.M)) >= 2, "the recap example is one round"
+    assert re.search(r"^> .*\b(left|remain)", session, re.M), "no line says how many remain"
 
 
 def test_the_cap_is_per_message_not_per_session(skill_lower):

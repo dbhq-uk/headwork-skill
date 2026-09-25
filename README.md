@@ -64,7 +64,9 @@ something up does not make it worth interrupting you for.
 6. **Hand the answer back** to the session, which does the work.
 
 Then it goes again, for **as many rounds as it takes to unblock you**. There is
-no cap. What is capped is questions per message: one, then silence. Four
+no cap. What is capped is questions per message: one, then silence. It is done
+when the work can move without another decision from you, and after more than
+one round it ends with a recap, one line per decision. Four
 questions in one message is a form, and what comes back is whatever was easiest
 to answer rather than what mattered.
 

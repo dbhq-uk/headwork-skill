@@ -69,6 +69,12 @@ no cap and no stopping after one: if settling the first decision reveals a
 second, raise it - alone, in its own message, the same way. Say how many remain
 in one line first, so the user knows the shape of what is left.
 
+**The session is done when the work can take its next action without another
+decision from the user.** Not when every question has been asked - when nothing
+is blocking. After more than one round, end with a recap: one line per
+decision, saying what was chosen and why in a few words. The recap lives in the
+conversation, not in a file.
+
 Step 5 is where this breaks in practice. A message that ends with a question box
 **and** a trailing open question has asked two things, and the second one will be
 ignored or answered badly. Rounds are unlimited; questions per message are not.
@@ -144,11 +150,18 @@ options and ask for a pick: that is a form, and Codex's own instructions forbid
 a multiple-choice question written as text. A yes, the name of an alternative,
 or something else entirely are all answers.
 
-## If the answer is empty, or asks for more
+## Taking the answer
 
-- **An empty or dismissed answer is not a choice.** Do not take it as agreement
-  with the recommendation, and do not ask again in the same turn. Say in one
-  line that the decision is still open, then stop.
+- **A choice, including one against the recommendation.** Take it, and do not
+  argue it again. Flag it once, in one line, only if it breaks a constraint the
+  user or the repository has stated.
+- **"Just pick" or "you decide".** Take the recommendation, say in one line that
+  you did, and carry on.
+- **An "Other" answer.** Read it as the choice. If it does not settle the
+  decision, or opens a new one, that is the next round, asked the same way.
+- **No answer, or an empty or dismissed one.** It is not a choice. Do not take
+  it as agreement with the recommendation, and do not ask again in the same
+  turn. Say in one line that the decision is still open, then stop.
 - **Asked for more questions at once, still ask one.** Say in one line how many
   remain and what each is about, then ask the one blocking the work.
 
@@ -186,6 +199,6 @@ rather than ask:
 
 ## Worked examples
 
-See [`references/worked-examples.md`](references/worked-examples.md) for four
-full rounds - one normal, two refusals, and one where looking first removed the
-question entirely.
+See [`references/worked-examples.md`](references/worked-examples.md) for five -
+one normal round, two refusals, one where looking first removed the question
+entirely, and a two-round session that ends in a recap.
