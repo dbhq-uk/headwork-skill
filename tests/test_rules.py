@@ -23,7 +23,7 @@ import re
 
 import pytest
 
-REPO = pathlib.Path(__file__).resolve().parents[3]
+REPO = pathlib.Path(__file__).resolve().parents[1]
 SKILL_DIR = REPO / "skills" / "headwork"
 SKILL_MD = SKILL_DIR / "SKILL.md"
 
@@ -364,11 +364,35 @@ def test_the_cap_is_per_message_not_per_session(skill_lower):
 STATE_PATHS = (".headwork/", "~/.dbhq/headwork", ".dbhq/headwork")
 
 
-def test_no_scripts_ship_in_the_skill():
-    """headwork decides; the session acts. A script here is write access."""
-    assert not (SKILL_DIR / "scripts").exists(), "headwork must not grow scripts"
-    stray = [p for p in SKILL_DIR.rglob("*.py") if "tests" not in p.parts]
-    assert not stray, f"executable code outside tests: {stray}"
+def test_the_skill_is_markdown_only():
+    """headwork decides; the session acts. A script here is write access, and
+    the installers copy or link this whole directory, so anything in it ships."""
+    stray = [
+        str(p.relative_to(REPO))
+        for p in SKILL_DIR.rglob("*")
+        if p.is_file() and p.suffix != ".md" and "__pycache__" not in p.parts
+    ]
+    assert not stray, f"the skill directory must hold markdown only: {stray}"
+
+
+def repo_files(*suffixes):
+    """Every file in the repository with one of these suffixes."""
+    skip = {".git", "__pycache__", ".venv", ".pytest_cache", ".ruff_cache"}
+    return [
+        p
+        for p in sorted(REPO.rglob("*"))
+        if p.is_file() and p.suffix in suffixes and not skip.intersection(p.parts)
+    ]
+
+
+def test_security_md_names_everything_that_runs():
+    """SECURITY.md once said no scripts ship, while two installers and a test
+    suite did. Every script has to be named, by file or by its folder."""
+    text = (REPO / "SECURITY.md").read_text(encoding="utf-8")
+    for path in repo_files(".sh", ".py"):
+        rel = path.relative_to(REPO)
+        named = f"`{rel.name}`" in text or f"`{rel.parts[0]}/`" in text
+        assert named, f"SECURITY.md does not say that {rel} ships"
 
 
 def test_the_installers_create_no_state_directory():
@@ -390,6 +414,51 @@ def test_skill_md_refuses_to_scan(skill_lower):
 
 def test_skill_md_refuses_to_edit(skill_lower):
     assert "never edits anything" in skill_lower
+
+
+# --- The files agree with each other ----------------------------------------
+
+NUMBER_WORDS = ("one", "two", "three", "four", "five", "six", "seven", "eight", "nine")
+
+
+def test_every_count_of_the_parts_is_right(skill_text):
+    """install-codex.sh kept the old count after a sixth part was added."""
+    body = section(skill_text, "The six parts")
+    count = len(re.findall(r"^\d+\. ", body.split("```")[0], re.M))
+    for path in repo_files(".md", ".sh", ".py", ".json"):
+        text = flat(path.read_text(encoding="utf-8").lower())
+        for word in re.findall(r"\b(" + "|".join(NUMBER_WORDS) + r") parts\b", text):
+            assert NUMBER_WORDS.index(word) + 1 == count, (
+                f"{path.relative_to(REPO)} says {word} parts; SKILL.md lists {count}"
+            )
+
+
+def test_agents_md_names_the_right_refusal_case(skill_text):
+    """AGENTS.md gave the consequence rule the wrong number among the refusal
+    cases. It is the third, and a wrong number sends a reader to another one."""
+    agents = flat((REPO / "AGENTS.md").read_text(encoding="utf-8").lower())
+    said = re.search(r"this is the (\w+) refusal case", agents)
+    assert said, "AGENTS.md no longer points rule 5 at its refusal case"
+    ordinals = ("first", "second", "third", "fourth", "fifth", "sixth")
+    cases = re.findall(r"^- \*\*(.+?)\*\*", section(skill_text, "Refusal is a correct result"), re.M)
+    actual = next(i for i, case in enumerate(cases) if "not consequential enough" in case)
+    assert said.group(1) == ordinals[actual], (
+        f"AGENTS.md says {said.group(1)}; it is the {ordinals[actual]} case in SKILL.md"
+    )
+
+
+def test_only_the_alternatives_carry_a_cost(skill_text):
+    """AGENTS.md said the recommendation names its cost too. SKILL.md and the
+    worked examples put a COST on the alternatives only."""
+    block = fenced_blocks(section(skill_text, "The six parts"))[0]
+    recommended = re.search(r"^recommended: .*$", block, re.M).group(0)
+    assert "cost:" not in recommended, "the block puts a COST on the recommendation"
+    agents = (REPO / "AGENTS.md").read_text(encoding="utf-8")
+    rule = re.search(r"^### 3\. (.*?)(?=^### )", agents, re.M | re.S)
+    assert rule, "AGENTS.md has no rule 3"
+    rule = flat(rule.group(1).lower())
+    assert "no `cost:` line" in rule, "AGENTS.md rule 3 no longer says the recommendation has no cost"
+    assert "names what it costs" not in rule
 
 
 # --- The comparison with grill-me -----------------------------------------

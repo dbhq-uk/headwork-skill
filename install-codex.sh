@@ -2,7 +2,7 @@
 # Install the headwork skill for Codex.
 #
 # Codex does not substitute ${CLAUDE_SKILL_DIR}, so SKILL.md is rewritten with
-# the real installed path and the subdirectories are symlinked alongside it.
+# the real installed path and references/ is symlinked alongside it.
 #
 # headwork chooses how to ask by what the tools can do. Codex's question tool,
 # request_user_input, is on in Plan mode, and in Default mode only behind the
@@ -29,9 +29,7 @@ for src in "$SCRIPT_DIR"/skills/*/; do
   # does not survive as a dangling link that still looks installed. Only
   # symlinks are removed, so a real SKILL.md is never at risk.
   find "$target" -mindepth 1 -maxdepth 1 -type l -exec rm -f {} +
-  for sub in references tests; do
-    [ -d "$src/$sub" ] && ln -sfn "$src/$sub" "$target/$sub"
-  done
+  [ -d "$src/references" ] && ln -sfn "$src/references" "$target/references"
   sed "s#\${CLAUDE_SKILL_DIR}#$target#g" "$src/SKILL.md" > "$target/SKILL.md"
 done
 

@@ -62,7 +62,7 @@ jobs:
       - name: The rules hold
         run: |
           python3 -m pip install --quiet pytest
-          python3 -m pytest skills/headwork/tests -q
+          python3 -m pytest tests -q
 
   # THE SAME TWO LINTERS IN EVERY DBHQ SKILL REPO, settled 17 Sep 2026.
   #

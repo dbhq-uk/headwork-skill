@@ -16,8 +16,15 @@ Very little, because it is instructions rather than a program.
 - **No credentials.** Nothing to store, so nothing to leak.
 - **No state on disk.** No config file, no run log, no directory of its own. It
   writes nothing anywhere, which is a stated design rule with a test behind it.
-- **No execution.** There are no scripts in this repository. Installing it
-  places a symlink to a directory of markdown.
+- **Nothing runs when you use it.** The skill is markdown: `SKILL.md` and a
+  `references/` folder. A test fails if anything but markdown is added to it.
+- **Two installers, run once.** `install.sh` and `install-codex.sh` are for
+  installing from source. They replace any earlier headwork install with
+  symlinks, and the Codex one also writes a copy of `SKILL.md`. Neither fetches
+  anything or needs elevated rights.
+- **Tests, run by CI.** The `tests/` folder is Python that checks the skill's
+  rules. No installer puts it in your skills directory. A plugin install
+  downloads the whole repository, tests included, but only loads the skill.
 
 ## The one thing worth knowing
 
