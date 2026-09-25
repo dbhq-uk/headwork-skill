@@ -79,6 +79,11 @@ keeps going for as many rounds as it takes to unblock the user. Do not reinstate
 a stop-after-one: the limit is questions per message, never how many decisions a
 session may settle.
 
+Uncapped is not endless. A session is done when the work can take its next
+action without another decision from the user, because an agent can always find
+one more question. It ends with a recap, one line per decision, in the
+conversation. Not in a file: the no-state rule below still holds.
+
 ### 3. Every option carries a justification, and every alternative its cost
 
 An option with a bare label is not an option, it is a word to pick between. An
