@@ -259,6 +259,29 @@ def test_every_worked_example_round_passes():
     assert roundcheck.check_file(EXAMPLES) == []
 
 
+def test_the_worked_examples_cover_every_way_of_asking():
+    """The no-tool path is the one most at risk, and Codex has its own limits.
+    Each needs a round a reader can copy."""
+    rounds = roundcheck.rounds_in_markdown(EXAMPLES.read_text(encoding="utf-8"))
+    tools = {tool for _, _, tool, _ in rounds}
+    for tool in ("AskUserQuestion", "request_user_input", None):
+        assert tool in tools, f"no worked example asks with {tool or 'no tool'}"
+
+
+def test_a_worked_example_overturns_its_recommendation():
+    """The OVERTURNED IF clause working: the user knows the condition holds
+    and picks an alternative."""
+    text = EXAMPLES.read_text(encoding="utf-8")
+    sections = [s for s in re.split(r"^## ", text, flags=re.M) if "overturned" in s.splitlines()[0]]
+    assert sections, "no worked example overturns its recommendation"
+    section = sections[0]
+    _, message, _, _ = roundcheck.rounds_in_markdown(section)[0]
+    _, options, _ = roundcheck.check_block(message)
+    picked = re.search(r"The user picks \*\*(.+?)\*\*", section)
+    assert picked, "the example does not say what the user picked"
+    assert picked.group(1) in options[1:], "the user picked the recommendation"
+
+
 def test_the_anti_pattern_fails():
     """The worked examples end on what headwork exists to stop. It must fail."""
     text = EXAMPLES.read_text(encoding="utf-8").split("## The anti-pattern")[1]

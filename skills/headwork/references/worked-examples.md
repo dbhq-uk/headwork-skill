@@ -1,8 +1,9 @@
 # Worked examples
 
-Five examples. The fourth is the one that matters most, because the best outcome
-is often that the question disappears. The fifth shows a session of more than
-one round, and how it ends.
+Seven examples. The fourth is the one that matters most, because the best
+outcome is often that the question disappears. The fifth shows a session of
+more than one round, and how it ends. The sixth is a round with no question
+tool, and the seventh is a recommendation overturned by its own clause.
 
 ## 1. A normal round
 
@@ -224,6 +225,105 @@ it ends with the recap:
 
 The recap is part of the conversation. It is not written to a file, and the
 reasoning it summarises belongs in the commit message.
+
+## 6. A round with no question tool
+
+The user is working through a subagent, which has no question tool, and says
+"I'm stuck between splitting out the slow tests and running them in parallel".
+
+**Look:** the CI workflow, the pytest configuration, and the durations in the
+last run's log.
+
+**The message**, which ends with its only question:
+
+> Checked: `ci.yml`, `pyproject.toml`, `conftest.py` and the last run's log -
+> the suite takes nine minutes, 40 of its 600 tests take seven of them, and
+> every test builds its own temporary directory, so no two share a file.
+>
+> 1. Running in parallel spreads all 600 tests over the runner's four cores.
+>    Nothing is skipped.
+> 2. Splitting moves the 40 slow tests to a nightly job. Every push is faster,
+>    but those 40 stop checking pull requests.
+> 3. Tests that share a file or a database break when they run in parallel.
+>    These do not.
+>
+> RECOMMENDED: Run the tests in parallel. REASON: every test still runs on
+> every pull request, and four cores should more than halve the nine minutes.
+> OVERTURNED IF: the slow tests need something only one test can use at a
+> time, such as a shared staging service - then split them out.
+> INSTEAD: Split out the slow tests - the fastest push of the three. COST: a
+> bug that only those 40 catch reaches `main` and waits for the nightly run.
+> INSTEAD: Pay for a bigger runner - no change to the tests. COST: it costs
+> money every month, and the suite still runs one test at a time.
+>
+> Go with running the tests in parallel?
+
+The message ends at the question. It does not number the options and ask for
+a pick, because that is a form. "Yes", "split them" or an answer that is none
+of the three all work.
+
+## 7. The recommendation overturned by its own clause
+
+The user is in Codex, in Plan mode, where `request_user_input` is on. They are
+starting a small internal tool and say "help me decide which database this
+should use".
+
+**Look:** the repository, its README and the open issues.
+
+**The message:**
+
+> Checked: the repository, its README and the three open issues - the app is
+> one web process with a few hundred rows, nothing else writes to it yet, and
+> no issue mentions another service.
+>
+> 1. SQLite is a file next to the app. There is no server to run or back up.
+> 2. SQLite lets one process write at a time, and the others wait for the lock.
+> 3. Moving from SQLite to Postgres later means migrating the data, which gets
+>    harder as it grows.
+>
+> RECOMMENDED: Use SQLite. REASON: one process writes a few hundred rows, and a
+> file needs nothing else to run.
+> OVERTURNED IF: another process will write while the app runs - then use
+> Postgres, because two writers queue for SQLite's one lock.
+> INSTEAD: Use Postgres - any number of writers. COST: a server to run, back up
+> and upgrade, for a few hundred rows.
+> INSTEAD: Use JSON files - nothing to install. COST: no queries and no
+> transactions, so two saves at once can lose one of them.
+
+Then one call to `request_user_input`. Codex allows three options, so the block
+has three as well:
+
+```json
+{
+  "questions": [
+    {
+      "id": "database",
+      "header": "Database",
+      "question": "Which database should the tool use?",
+      "options": [
+        {"label": "Use SQLite (Recommended)", "description": "One file and no server, for one writer."},
+        {"label": "Use Postgres", "description": "Any number of writers, and a server to run."},
+        {"label": "Use JSON files", "description": "Nothing to install, and no transactions."}
+      ]
+    }
+  ]
+}
+```
+
+The user picks **Use Postgres**, and says why: a nightly importer, not written
+yet, will write to the database while the app is up.
+
+That is the clause working. No amount of looking would have found an importer
+that does not exist yet. The user did not have to argue with the
+recommendation. They checked its condition against something only they knew,
+and it held.
+
+So the agent takes the answer, and does not argue it again:
+
+> Postgres, then, since the importer will write while the app is up. Setting it
+> up now.
+
+Then it does the work.
 
 ## The anti-pattern
 
