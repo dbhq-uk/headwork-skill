@@ -170,6 +170,14 @@ they assert that `SKILL.md` states the rules, that both ways of asking carry the
 same parts, and that nothing writes state. They cannot test the behaviour of a
 model reading the file, and they do not pretend to.
 
+`tests/roundcheck.py` checks the shape of a round, offline: the Checked line,
+the explainer, the options in order with a cost on each alternative, and one
+question with nothing after it. It runs over the block in `SKILL.md`, every
+worked example and every real reply saved in `tests/transcripts/`. It sees
+shape, not judgement. `evals/` holds prompt cases for the judgement - a
+question a file could have answered, a session that never stops - to run
+against a real model by hand. They are not run in CI.
+
 That is a real limit, stated rather than hidden. It means a change that keeps
 every rule visible in the file but buries them under three screens of new prose
 would pass. Keep the file short.

@@ -40,15 +40,25 @@ last run passed.
 > files at the edge are the exact bug the step was added for on 16 Sep, so this
 > reinstates a known problem to avoid an unknown one.
 
-Then one call to the question tool, with `multiSelect: false` and the header
-`Deploy fix`. The argument is already in the message, so each description is one
-short sentence:
+Then one call to `AskUserQuestion`. The argument is already in the message, so
+each description is one short sentence:
 
-| Label | Description |
-|---|---|
-| **Fix the variable and push (Recommended)** | One push proves the build and the purge together. |
-| **Prove the purge locally first** | Tests the purge by hand before CI relies on it. |
-| **Revert the purge step** | Gets deploys working today and puts the purge off. |
+```json
+{
+  "questions": [
+    {
+      "question": "How do you want to fix the deploy?",
+      "header": "Deploy fix",
+      "multiSelect": false,
+      "options": [
+        {"label": "Fix the variable and push (Recommended)", "description": "One push proves the build and the purge together."},
+        {"label": "Prove the purge locally first", "description": "Tests the purge by hand before CI relies on it."},
+        {"label": "Revert the purge step", "description": "Gets deploys working today and puts the purge off."}
+      ]
+    }
+  ]
+}
+```
 
 With no question tool, the same message ends with one line instead of the call:
 
@@ -142,13 +152,24 @@ The user maintains a command-line tool and wants to rename its `--out` flag to
 > INSTEAD: Keep a silent alias - nothing breaks and nothing nags. COST: nobody
 > learns the new name, so the alias can never be removed.
 
-Then one call, header `Flag rename`, `multiSelect: false`:
+Then one call to `AskUserQuestion`:
 
-| Label | Description |
-|---|---|
-| **Keep a warning alias (Recommended)** | Ships in a minor release and breaks nobody. |
-| **Rename outright** | One name everywhere, in a major release. |
-| **Keep a silent alias** | Nothing breaks and nothing nags. |
+```json
+{
+  "questions": [
+    {
+      "question": "How should `--out` become `--output`?",
+      "header": "Flag rename",
+      "multiSelect": false,
+      "options": [
+        {"label": "Keep a warning alias (Recommended)", "description": "Ships in a minor release and breaks nobody."},
+        {"label": "Rename outright", "description": "One name everywhere, in a major release."},
+        {"label": "Keep a silent alias", "description": "Nothing breaks and nothing nags."}
+      ]
+    }
+  ]
+}
+```
 
 The user picks the warning alias. The session adds `--output`, keeps `--out`
 as an alias that warns, and updates the tests and the README. Writing the
@@ -174,12 +195,23 @@ warning text turns up one more decision: it has to say when the alias goes.
 > COST: the removal would land in a minor release, which is the break the alias
 > exists to avoid.
 
-Then one call, header `Alias end`, `multiSelect: false`:
+Then one call to `AskUserQuestion`:
 
-| Label | Description |
-|---|---|
-| **Remove it in 3.0 (Recommended)** | The warning names the version it goes in. |
-| **Remove after six months** | A fixed end date, whatever the version. |
+```json
+{
+  "questions": [
+    {
+      "question": "When should the `--out` alias go?",
+      "header": "Alias end",
+      "multiSelect": false,
+      "options": [
+        {"label": "Remove it in 3.0 (Recommended)", "description": "The warning names the version it goes in."},
+        {"label": "Remove it after six months", "description": "A fixed end date, whatever the version."}
+      ]
+    }
+  ]
+}
+```
 
 The user picks 3.0. The session writes the warning text and the changelog
 entry. Nothing else needs a decision from the user, so the session is done, and

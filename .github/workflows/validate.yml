@@ -64,6 +64,13 @@ jobs:
           python3 -m pip install --quiet pytest
           python3 -m pytest tests -q
 
+      # pytest runs this too. It runs again here so a broken round shows up in
+      # the log as file:line and the problem, not as a failed assertion.
+      - name: Every saved round follows the format
+        run: |
+          python3 tests/roundcheck.py \
+            skills/headwork/references/worked-examples.md tests/transcripts/*.md
+
   # THE SAME TWO LINTERS IN EVERY DBHQ SKILL REPO, settled 17 Sep 2026.
   #
   # IT IS A DELIBERATELY NARROW RUFF SELECTION. `E9` is syntax errors and `F`

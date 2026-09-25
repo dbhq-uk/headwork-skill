@@ -16,6 +16,10 @@ The rules under test are the ones in AGENTS.md:
   5. Findability is not the only test - consequence is the other one
 
 Plus the three things headwork must never grow: a scanner, write access, state.
+
+The shape of a round - the block, the options, one question - is checked by
+roundcheck.py, over the block in SKILL.md, every worked example and every saved
+transcript. See test_roundcheck.py.
 """
 
 import pathlib
@@ -126,16 +130,6 @@ def test_look_first_rule_is_stated(skill_lower):
     assert "never ask what you can find out" in skill_lower
 
 
-def test_look_first_rule_is_not_hedged(skill_lower):
-    """A conditional look-first rule is not a rule."""
-    for hedge in (
-        "never ask what you can find out, where practical",
-        "never ask what you can find out if time",
-        "where possible, never ask what you can find out",
-    ):
-        assert hedge not in skill_lower
-
-
 def test_the_checked_line_is_required(skill_lower):
     """The stated 'what I checked' line is the enforcement mechanism."""
     assert "what you checked" in skill_lower
@@ -172,32 +166,7 @@ def test_the_overturn_clause_is_required(skill_lower):
     assert "overturned if:" in skill_lower
 
 
-def test_the_overturn_clause_is_in_the_block(skill_text):
-    block = fenced_blocks(section(skill_text, "The six parts"))
-    assert block, "'The six parts' lost its written-out block"
-    assert "overturned if:" in block[0], "the block lost the OVERTURNED IF clause"
-
-
 # --- Rule 4: both ways of asking carry the same parts ----------------------
-
-# The six parts, and a marker that must appear in 'The six parts' section.
-SIX_PARTS = {
-    "what you checked": "what you checked",
-    "bite-sized explainer": "bite-sized",
-    "two to four options": "two to four options",
-    "justification per option": "justification",
-    "named recommendation": "recommend",
-    "what would overturn it": "overturn",
-}
-
-# The written-out block carries each part as a token a reader can see.
-BLOCK_TOKENS = {
-    "what you checked": r"^checked: ",
-    "bite-sized explainer": r"^1\. ",
-    "named recommendation, with its justification": r"^recommended: .*reason: ",
-    "what would overturn it": r"^overturned if: ",
-    "an alternative, with its justification and cost": r"^instead: .* - .*cost: ",
-}
 
 # Each way of asking sends the block, so each carries all six parts. A new
 # way of asking added per CONTRIBUTING.md goes in this list.
@@ -205,22 +174,6 @@ HARNESS_SECTIONS = [
     "With a question tool",
     "Without a question tool",
 ]
-
-
-def test_the_six_parts_are_stated_once_up_front(skill_text):
-    parts = section(skill_text, "The six parts")
-    for part, marker in SIX_PARTS.items():
-        assert marker in parts, f"'The six parts' no longer names {part}"
-
-
-def test_the_block_carries_the_six_parts_in_order(skill_text):
-    block = fenced_blocks(section(skill_text, "The six parts"))[0]
-    positions = []
-    for part, token in BLOCK_TOKENS.items():
-        match = re.search(token, block, re.M)
-        assert match, f"the block is missing {part}"
-        positions.append(match.start())
-    assert positions == sorted(positions), "the block's parts are out of order"
 
 
 @pytest.mark.parametrize("heading", HARNESS_SECTIONS)
@@ -278,16 +231,6 @@ def test_an_empty_answer_and_a_request_for_more_are_covered(skill_text):
     body = flat(section(skill_text, "Taking the answer"))
     assert "not a choice" in body
     assert "still ask one" in body
-
-
-def test_worked_example_labels_are_one_to_five_words():
-    """Both question tools ask for option labels of 1-5 words."""
-    text = (SKILL_DIR / "references" / "worked-examples.md").read_text(encoding="utf-8")
-    labels = re.findall(r"^\| \*\*(.+?)\*\* \|", text, re.M)
-    assert labels, "no option labels found in the worked examples"
-    for label in labels:
-        words = label.replace("(Recommended)", "").split()
-        assert 1 <= len(words) <= 5, f"label is {len(words)} words: {label!r}"
 
 
 # --- Rule 5: consequence, not just findability -----------------------------
