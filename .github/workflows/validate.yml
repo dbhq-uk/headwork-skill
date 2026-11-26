@@ -23,7 +23,10 @@ jobs:
       dash-files: "*.md *.py"
 
   validate:
-    runs-on: ubuntu-latest
+    # Pinned, not ubuntu-latest: the repo promises Python 3.9 or newer, and
+    # setup-python has no 3.9 build for Ubuntu 26.04, which ubuntu-latest
+    # became after the last green run here. 24.04 still has one.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
