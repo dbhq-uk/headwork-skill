@@ -31,6 +31,7 @@ OVERTURNED IF: a 3.0 is already planned - then rename outright.
 INSTEAD: Rename outright - one name everywhere. COST: a major release for one
 flag.
 INSTEAD: Keep a silent alias - nothing nags. COST: nobody learns the new name.
+CLEAN SLATE: Same - with no release policy at all, an alias still breaks nobody.
 """
 
 TEXT = BLOCK + "\nGo with a warning alias?\n"
@@ -57,6 +58,11 @@ CODEX_CALL["questions"][0]["id"] = "flag_rename"
 FOURTH = "INSTEAD: Drop the flag - less to maintain. COST: breaks every script.\n"
 
 
+def with_fourth(text, extra=FOURTH):
+    """text with more INSTEAD lines, put where they belong: before CLEAN SLATE."""
+    return text.replace("CLEAN SLATE:", extra + "CLEAN SLATE:")
+
+
 def call_with(change):
     call = copy.deepcopy(CALL)
     change(call["questions"][0])
@@ -76,6 +82,24 @@ def test_a_good_round_with_askuserquestion_passes():
 
 def test_a_good_round_with_request_user_input_passes():
     assert roundcheck.check_round(BLOCK, "request_user_input", CODEX_CALL) == []
+
+
+def test_a_clean_slate_that_differs_names_an_alternative():
+    differs = TEXT.replace(
+        "CLEAN SLATE: Same - with no release policy at all, an alias still breaks nobody.",
+        "CLEAN SLATE: Rename outright - with no users yet, one name is simplest.",
+    )
+    assert roundcheck.check_round(differs) == []
+
+
+def test_a_reply_saved_before_clean_slate_is_checked_without_it(tmp_path):
+    old = re.sub(r"^CLEAN SLATE:.*\n", "", TEXT, flags=re.M)
+    marked = tmp_path / "old.md"
+    marked.write_text("<!-- saved earlier: before-clean-slate -->\n" + old, encoding="utf-8")
+    unmarked = tmp_path / "new.md"
+    unmarked.write_text("<!-- saved today -->\n" + old, encoding="utf-8")
+    assert roundcheck.check_file(marked) == []
+    assert any("no CLEAN SLATE line" in p for p in roundcheck.check_file(unmarked))
 
 
 def test_a_line_saying_how_many_remain_may_come_first():
@@ -156,12 +180,35 @@ BROKEN_TEXT = {
         "only one option",
     ),
     "five options": (
-        TEXT.replace("\nGo with", FOURTH + FOURTH.replace("Drop", "Hide") + "\nGo with"),
+        with_fourth(TEXT, FOURTH + FOURTH.replace("Drop", "Hide")),
         "5 options, more than 4",
     ),
     "no question at all": (
         BLOCK,
         "no question after the options",
+    ),
+    "no CLEAN SLATE line": (
+        re.sub(r"^CLEAN SLATE:.*\n", "", TEXT, flags=re.M),
+        "no CLEAN SLATE line",
+    ),
+    "a CLEAN SLATE with no reason": (
+        TEXT.replace("Same - with no release policy at all,", "Same, with no release policy at all,"),
+        "has no reason",
+    ),
+    "a CLEAN SLATE that is not an option": (
+        TEXT.replace("CLEAN SLATE: Same -", "CLEAN SLATE: Drop the flag -"),
+        "not one of the INSTEAD options",
+    ),
+    "a CLEAN SLATE naming the recommendation": (
+        TEXT.replace("CLEAN SLATE: Same -", "CLEAN SLATE: Keep a warning alias -"),
+        "not one of the INSTEAD options",
+    ),
+    "a CLEAN SLATE before the options end": (
+        TEXT.replace("CLEAN SLATE:", "X:").replace(
+            "INSTEAD: Keep a silent alias",
+            "CLEAN SLATE: Same - x.\nINSTEAD: Keep a silent alias",
+        ),
+        "follows the options, not a question",
     ),
 }
 
@@ -221,7 +268,7 @@ BROKEN_CALLS = {
         BLOCK, None, CALL, "does not name a question tool",
     ),
     "four options for Codex": (
-        BLOCK + FOURTH, "request_user_input",
+        with_fourth(BLOCK), "request_user_input",
         {"questions": [dict(CODEX_CALL["questions"][0], options=CALL["questions"][0]["options"]
                             + [{"label": "Drop the flag", "description": "x"}])]},
         "4 options, more than 3",

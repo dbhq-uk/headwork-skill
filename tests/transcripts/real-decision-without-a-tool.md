@@ -2,6 +2,8 @@
 Saved reply, evals/cases.md case 4 ("A real decision"), run on 25 Sep 2026 by
 a Claude Code subagent with no question tool, reading SKILL.md at 40c1c01. The
 reply is verbatim.
+Saved before the CLEAN SLATE line existed, so it is checked without it:
+before-clean-slate.
 -->
 Checked: `store.py`, the README, `tests/test_store.py`, `CHANGELOG.md`, `docs/release-2.0.md` and the git log, which has one commit (1.4.0) and no remote or issues. Returning None is the documented and tested behaviour today. The changelog says the project follows semantic versioning. `docs/release-2.0.md` lists "What `get` does with a missing key" as an open decision before 2.0, so nothing has settled it yet.
 

@@ -10,6 +10,8 @@ one call that follows it. This checks the shape, offline and without a model:
   OVERTURNED IF. Then one to three INSTEAD lines, each with a justification
   and a COST. That is two to four options in all, and two to three for
   Codex's request_user_input.
+- Then CLEAN SLATE: the pick if no earlier rule applied, with a reason after
+  ' - '. It names one of the INSTEAD options, or says Same.
 - There is one question and nothing follows it. Without a tool, it is the
   last line of the message. With a tool, it is in the call, and the message
   asks nothing.
@@ -24,6 +26,8 @@ With a question tool, the call follows it as a ```json block, and the
 paragraph before that block names the tool in backticks. Without one, the
 quoted block ends with the question. A file with no quoted block is read as
 one message sent without a tool, so a reply can be saved exactly as it came.
+A saved reply from before the CLEAN SLATE line was added says
+'before-clean-slate' in its HTML comment, and is checked without it.
 
     python3 tests/roundcheck.py FILE...
 
@@ -42,7 +46,8 @@ TOOLS = {
     "request_user_input": {"max_options": 3, "multi_select_field": False},
 }
 MAX_OPTIONS = 4
-TOKENS = ("Checked:", "RECOMMENDED:", "OVERTURNED IF:", "INSTEAD:")
+TOKENS = ("Checked:", "RECOMMENDED:", "OVERTURNED IF:", "INSTEAD:", "CLEAN SLATE:")
+EXEMPT = "before-clean-slate"
 MARK = "(Recommended)"
 COUNT = r"\b(\d+|one|two|three|four|five|six|seven|eight|nine|ten)\b"
 
@@ -86,11 +91,12 @@ def _start(text):
     return text if len(text) <= 50 else text[:47] + "..."
 
 
-def check_block(message, max_options=MAX_OPTIONS):
+def check_block(message, max_options=MAX_OPTIONS, clean_slate=True):
     """Check the written-out block. Return (problems, options, rest).
 
     options is the option names in order, the recommendation first. rest is the
-    items after the last INSTEAD line, for check_round to judge.
+    items after the CLEAN SLATE line, for check_round to judge. With
+    clean_slate False, a block with no CLEAN SLATE line is not a problem.
     """
     problems = []
     items = _items(message)
@@ -153,6 +159,19 @@ def check_block(message, max_options=MAX_OPTIONS):
         problems.append("there is no INSTEAD line, so there is only one option")
     if len(options) > max_options:
         problems.append(f"{len(options)} options, more than {max_options}")
+
+    if kind(i) == "CLEAN SLATE:":
+        name, dash, _ = items[i][1][len("CLEAN SLATE:"):].partition(" - ")
+        name = name.strip()
+        if not dash:
+            problems.append(f"CLEAN SLATE {name!r} has no reason after ' - '")
+        if name.lower() != "same" and name not in options[1:]:
+            problems.append(
+                f"CLEAN SLATE {name!r} is not Same and not one of the INSTEAD options"
+            )
+        i += 1
+    elif clean_slate:
+        problems.append("there is no CLEAN SLATE line after the options")
     return problems, options, items[i:]
 
 
@@ -207,14 +226,14 @@ def check_call(call, tool, options):
     return problems
 
 
-def check_round(message, tool=None, call=None):
+def check_round(message, tool=None, call=None, clean_slate=True):
     """Check one round, and return its problems. None means it passes.
 
     With a call, the question is in the call and the message asks nothing.
     Without one, the message ends with its only question.
     """
     max_options = TOOLS[tool]["max_options"] if tool in TOOLS else MAX_OPTIONS
-    problems, options, rest = check_block(message, max_options)
+    problems, options, rest = check_block(message, max_options, clean_slate)
     asked = _questions(message)
 
     if call is None:
@@ -286,14 +305,21 @@ def rounds_in_markdown(text):
 
 def check_file(path):
     """Every problem in every round of a file, as 'path:line: problem'."""
-    rounds = rounds_in_markdown(Path(path).read_text(encoding="utf-8"))
+    text = Path(path).read_text(encoding="utf-8")
+    rounds = rounds_in_markdown(text)
     if not rounds:
         return [f"{path}: no round found"]
+    clean_slate = not exempt(text)
     return [
         f"{path}:{line}: {problem}"
         for line, message, tool, call in rounds
-        for problem in check_round(message, tool, call)
+        for problem in check_round(message, tool, call, clean_slate)
     ]
+
+
+def exempt(text):
+    """Whether a saved reply predates the CLEAN SLATE line, by its comment."""
+    return any(EXEMPT in comment for comment in re.findall(r"<!--.*?-->", text, re.S))
 
 
 def main(paths):

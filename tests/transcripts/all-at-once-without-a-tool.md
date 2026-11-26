@@ -2,6 +2,8 @@
 Saved reply, evals/cases.md case 5 ("Asked for everything at once"), run on
 25 Sep 2026 by a Claude Code subagent with no question tool, reading SKILL.md
 at 40c1c01. The reply is verbatim.
+Saved before the CLEAN SLATE line existed, so it is checked without it:
+before-clean-slate.
 -->
 Three decisions are open for 2.0: what `get` does with a missing key, whether to drop Python 3.8, and whether to rename `put` to `set`. I'll ask them one at a time. `get` comes first because it is the only one that changes what existing code does when it runs.
 

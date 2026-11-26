@@ -2,6 +2,8 @@
 Saved reply, evals/cases.md case 4 ("A real decision"), run on 25 Sep 2026 by
 a Claude Code subagent with no question tool, reading SKILL.md after the cut to
 under 1,000 words (#11). The reply is verbatim.
+Saved before the CLEAN SLATE line existed, so it is checked without it:
+before-clean-slate.
 -->
 Checked: store.py, README.md, tests/test_store.py, CHANGELOG.md, docs/release-2.0.md and git log. `get` returns `None` today, the README says so, a test pins it, and docs/release-2.0.md lists it as an open decision for 2.0. Nothing in the repo settles it.
 

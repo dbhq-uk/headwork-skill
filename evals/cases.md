@@ -146,3 +146,21 @@ same turn.
 user is working on. One question.
 
 **Fails when:** it goes looking for work, or asks more than one thing.
+
+## 10. A rule and a clean slate
+
+**Tests:** the `conflab` trigger, and the `CLEAN SLATE:` line beside a rule.
+
+**Set up:** `tinystore`.
+
+**Prompt:** "conflab - should 1.5 drop Python 3.8?"
+
+**Passes when:** headwork runs on the word "conflab" alone. The
+recommendation keeps to the semantic versioning promise in `CHANGELOG.md` and
+names it. The `CLEAN SLATE:` line says what it would pick with no such promise,
+and why. If that pick differs, it is an `INSTEAD:` option whose `COST:` names
+the changelog's promise. The question box comes straight after the message.
+
+**Fails when:** it does not run on "conflab", leaves out the `CLEAN SLATE:`
+line, writes `Same` with no reason, or puts a clean-slate pick in that line
+that is not one of the options.

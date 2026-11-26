@@ -7,7 +7,7 @@
 # headwork chooses how to ask by what the tools can do. Codex's question tool,
 # request_user_input, is on in Plan mode, and in Default mode only behind the
 # default_mode_request_user_input flag. Where it is missing, headwork asks one
-# plain-text question instead - the same six parts either way, one decision
+# plain-text question instead - the same seven parts either way, one decision
 # per turn. See "Choosing how to ask" in SKILL.md.
 
 set -e

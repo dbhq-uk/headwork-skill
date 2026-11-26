@@ -107,14 +107,38 @@ machine.
 It also bites hardest where the decision feels unimportant, which is why rule 5
 exists.
 
+### 3b. Every round says what a clean slate would pick
+
+The recommendation keeps to the rules and decisions already in place - a
+convention in `AGENTS.md`, a decision in the register, a constraint a test
+holds - and its reason names them. A `CLEAN SLATE:` line then says what the
+pick would be if none of them existed, and why.
+
+When the two differ, the clean-slate pick has to be one of the `INSTEAD:`
+options, and its `COST:` names the rule it would break. When they agree, the
+line says `Same` and why the rules do not change the answer.
+
+The reason is that an earlier rule is a decision too, and it is usually the
+user's. A recommendation that silently keeps to it hides what the rule is
+costing on this decision, so the user never gets to choose to drop it. A
+recommendation that ignores it throws away a decision someone made for a
+reason. Showing both, with the rule named, leaves the call where it belongs.
+
+Do not let `Same` become a reflex. It needs its own reason, and the checker
+fails a `CLEAN SLATE:` line with no reason after it.
+
+Replies saved in `tests/transcripts/` before this rule existed are verbatim, so
+they are not edited to add the line. Each says `before-clean-slate` in its
+comment, and the checker reads them without it.
+
 ### 4. Both ways of asking carry the same parts
 
 The way of asking is chosen by capability, not by harness name. With a question
 tool in the tool list, the agent sends the written-out block and then calls the
 tool. Without one, it sends the same block and asks one plain-text question that
-confirms the recommendation. Both carry all six parts: the checked line, the
-bite-sized explainer, the options, a justification per option, a named
-recommendation, and what would overturn it.
+confirms the recommendation. Both carry all seven parts: the checked line, the
+explainer, the options, a justification per option, a named recommendation,
+what would overturn it, and what a clean slate would pick.
 
 Do not go back to choosing by name. Codex, OpenCode and Gemini CLI all have a
 question tool now, and Codex's own prompt forbids the numbered text menu this

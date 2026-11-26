@@ -18,7 +18,7 @@ Python 3.9 or newer, standard library plus pytest. No credentials, no network,
 nothing to install.
 
 The tests are structural: they assert `SKILL.md` states its rules, that asking
-with a question tool and asking without one carry the same six parts, and that
+with a question tool and asking without one carry the same seven parts, and that
 nothing writes state. `tests/roundcheck.py` checks the shape of every saved
 round: the worked examples and the real replies in `tests/transcripts/`.
 

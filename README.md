@@ -56,10 +56,12 @@ something up does not make it worth interrupting you for.
 
 1. **Look** - session first, then whatever the decision touches.
 2. **Say what you checked**, in one line, including anything it already settles.
-3. **Explain in bite-sized chunks** - two to four short points, plain English.
+3. **Explain with the full context** - two to four short points, plain
+   English, with the real values and every term defined.
 4. **Ask one question** - two to four options, the recommendation named first
    with what would overturn it, every option carrying its justification and
-   every alternative its cost.
+   every alternative its cost. It keeps to the rules already in place, and a
+   `CLEAN SLATE:` line says what it would pick if they did not exist.
 5. **Stop and wait.** No second question, no trailing "and also".
 6. **Act on the answer** - the session carries out the chosen option as normal
    work, then starts a new round only if another decision blocks it.
@@ -154,14 +156,15 @@ background agent and `codex exec`. It is also most Codex sessions: Codex offers
 its tool in Plan mode, and in Default mode only behind the
 `default_mode_request_user_input` feature flag.
 
-Both ways send the same six parts in the same block, one question per message,
+Both ways send the same seven parts in the same block, one question per message,
 then stop and wait. A test holds them in step, so neither can quietly rot into
 prose.
 
 ## Using it
 
-It fires on its own when you say you are stuck between options, cannot decide,
-or ask to be unblocked. You can also call it directly:
+It fires on its own when you say "conflab", when you say you are stuck between
+options or cannot decide, or when you ask to be unblocked. You can also call it
+directly:
 
 ```
 /headwork
