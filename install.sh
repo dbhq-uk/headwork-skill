@@ -30,6 +30,7 @@ echo "headwork stores nothing. No credentials, no config, no state directory,"
 echo "no run log. To uninstall, delete the symlink:"
 echo "  rm $SKILLS_ROOT/headwork"
 echo
-echo "It fires on its own when you are stuck between options or cannot decide."
+echo "It fires on its own when you say conflab, are stuck between options or"
+echo "cannot decide."
 echo "You can also call it directly with /headwork."
 echo

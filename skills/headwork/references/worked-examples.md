@@ -1,9 +1,10 @@
 # Worked examples
 
-Seven examples. The fourth is the one that matters most, because the best
+Eight examples. The fourth is the one that matters most, because the best
 outcome is often that the question disappears. The fifth shows a session of
 more than one round, and how it ends. The sixth is a round with no question
-tool, and the seventh is a recommendation overturned by its own clause.
+tool, the seventh is a recommendation overturned by its own clause, and the
+eighth is a round where an earlier rule and a clean slate point different ways.
 
 ## 1. A normal round
 
@@ -40,6 +41,8 @@ last run passed.
 > INSTEAD: Revert the purge step - gets deploys working again today. COST: stale
 > files at the edge are the exact bug the step was added for on 16 Sep, so this
 > reinstates a known problem to avoid an unknown one.
+> CLEAN SLATE: Same - no earlier rule shapes this, and one green run is still
+> the quickest proof.
 
 Then one call to `AskUserQuestion`. The argument is already in the message, so
 each description is one short sentence:
@@ -152,6 +155,8 @@ The user maintains a command-line tool and wants to rename its `--out` flag to
 > every script using `--out` breaks, and it forces a major release for one flag.
 > INSTEAD: Keep a silent alias - nothing breaks and nothing nags. COST: nobody
 > learns the new name, so the alias can never be removed.
+> CLEAN SLATE: Same - even without semantic versioning, breaking every script
+> that passes `--out` is the bigger cost.
 
 Then one call to `AskUserQuestion`:
 
@@ -193,8 +198,10 @@ warning text turns up one more decision: it has to say when the alias goes.
 > OVERTURNED IF: 3.0 is likely to be more than a year away - then a date keeps
 > the alias from living for ever.
 > INSTEAD: Remove it after six months - a fixed end the warning can print.
-> COST: the removal would land in a minor release, which is the break the alias
-> exists to avoid.
+> COST: it breaks the changelog's semantic versioning promise, because the
+> removal would land in a minor release.
+> CLEAN SLATE: Remove it after six months - with no versioning promise, a date
+> is the plainer thing for a warning to say.
 
 Then one call to `AskUserQuestion`:
 
@@ -255,6 +262,8 @@ last run's log.
 > bug that only those 40 catch reaches `main` and waits for the nightly run.
 > INSTEAD: Pay for a bigger runner - no change to the tests. COST: it costs
 > money every month, and the suite still runs one test at a time.
+> CLEAN SLATE: Same - no earlier decision bears on this, and running every test
+> on every pull request is what CI is for.
 >
 > Go with running the tests in parallel?
 
@@ -289,6 +298,8 @@ should use".
 > and upgrade, for a few hundred rows.
 > INSTEAD: Use JSON files - nothing to install. COST: no queries and no
 > transactions, so two saves at once can lose one of them.
+> CLEAN SLATE: Same - the repository has no earlier decision about storage, so
+> there is nothing for a clean slate to undo.
 
 Then one call to `request_user_input`. Codex allows three options, so the block
 has three as well:
@@ -324,6 +335,64 @@ So the agent takes the answer, and does not argue it again:
 > up now.
 
 Then it does the work.
+
+## 8. An earlier rule, and a clean slate that disagrees
+
+The user is adding an allow-list of hostnames to a service and says "help me
+decide how the allow-list should be configured".
+
+**Look:** `AGENTS.md`, `config.py` and the README.
+
+**The message:**
+
+> Checked: `AGENTS.md`, `config.py` and the README - `AGENTS.md` says "every
+> setting is an environment variable, so the container needs no mounted
+> files", and all eleven settings follow it. The allow-list will start at about
+> 30 hostnames.
+>
+> 1. An environment variable holds one string, so 30 hostnames means one
+>    comma-separated line.
+> 2. A config file, such as TOML with one hostname per line, is easier to read
+>    and to review in a diff. But the container would need a mounted file, and
+>    the rule exists to avoid that.
+> 3. `ALLOWED_PORTS` is already read as a comma-separated list, so the parser
+>    exists.
+>
+> RECOMMENDED: Use a comma-separated variable. REASON: it keeps the rule in
+> `AGENTS.md`, so the container still needs no mounted file, and it reuses the
+> parser `ALLOWED_PORTS` already has.
+> OVERTURNED IF: the list will grow past what anyone can review on one line -
+> then the file is worth breaking the rule for.
+> INSTEAD: Use a TOML file - one hostname per line, easy to review. COST: it
+> breaks the environment-variable rule in `AGENTS.md`, so every deploy needs a
+> mounted file.
+> INSTEAD: Hard-code the list - nothing to configure. COST: every change
+> to the list is a release.
+> CLEAN SLATE: Use a TOML file - with no rule against mounted files, a list this
+> long reads best one entry per line.
+
+Then one call to `AskUserQuestion`, straight after the message:
+
+```json
+{
+  "questions": [
+    {
+      "question": "How should the allow-list be configured?",
+      "header": "Allow-list",
+      "multiSelect": false,
+      "options": [
+        {"label": "Use a comma-separated variable (Recommended)", "description": "Keeps the environment-variable rule and reuses its parser."},
+        {"label": "Use a TOML file", "description": "Easier to read, and breaks the rule."},
+        {"label": "Hard-code the list", "description": "Nothing to configure, and a release per change."}
+      ]
+    }
+  ]
+}
+```
+
+The recommendation keeps to the rule. The `CLEAN SLATE:` line shows what that
+rule costs here, and the TOML option's `COST:` names the rule it breaks, so the
+user can keep paying for the rule or decide to drop it. Neither is hidden.
 
 ## The anti-pattern
 

@@ -11,8 +11,9 @@ The rules under test are the ones in AGENTS.md:
   2. One question per message, then stop - rounds are NOT capped
   3. Every option carries a justification, and every alternative its cost
   3a. The recommendation says what would overturn it
+  3b. Every round says what a clean slate would pick, beside the rules
   4. Both ways of asking - with a question tool and without - carry the same
-     six parts, and the way is chosen by capability, not harness name
+     seven parts, and the way is chosen by capability, not harness name
   5. Findability is not the only test - consequence is the other one
 
 Plus the three things headwork must never grow: a scanner, write access, state.
@@ -86,7 +87,7 @@ def description(skill_text):
 
 def test_description_names_the_trigger_phrases(skill_text):
     """The description is the auto-trigger. If the phrases go, it never fires."""
-    for phrase in ("stuck between", "unblock", "decide"):
+    for phrase in ("stuck between", "unblock", "decide", "conflab"):
         assert phrase in description(skill_text), f"description no longer triggers on {phrase!r}"
 
 
@@ -164,9 +165,9 @@ def test_stop_and_wait_is_stated(skill_lower):
 
 
 def test_option_bounds_are_stated(skill_text):
-    parts = section(skill_text, "The six parts")
+    parts = section(skill_text, "The seven parts")
     tool = section(skill_text, "With a question tool")
-    assert "two to four options" in parts, "the six parts lost the option bound"
+    assert "two to four options" in parts, "the seven parts lost the option bound"
     assert "two to four options" in tool, "the tool path lost the option bound"
 
 
@@ -179,9 +180,40 @@ def test_the_overturn_clause_is_required(skill_lower):
     assert "overturned if:" in skill_lower
 
 
+# --- Rule 3b: a clean slate beside the rules --------------------------------
+
+
+def test_the_clean_slate_line_is_required(skill_text):
+    """The recommendation keeps to earlier rules. Without this line the user
+    never sees what those rules cost, so cannot choose to drop one."""
+    parts = section(skill_text, "The seven parts")
+    block = fenced_blocks(parts)[0]
+    assert re.search(r"^clean slate: ", block, re.M), "the block lost its CLEAN SLATE line"
+    body = flat(parts)
+    assert "keeps to the rules and decisions already in place" in body
+    assert "names the rule it breaks" in body
+    assert "clean slate: same -" in body
+
+
+def test_an_already_decided_refusal_still_gives_the_clean_slate(skill_text):
+    body = flat(section(skill_text, "Refusal is a correct result"))
+    assert "if a clean slate would pick otherwise, say so" in body
+
+
+def test_the_explainer_gives_the_full_context(skill_text):
+    step = flat(section(skill_text, "A round, exactly"))
+    assert "full context" in step
+    assert "every term defined" in step
+
+
+def test_the_tool_is_called_straight_after_the_message(skill_text):
+    body = flat(section(skill_text, "With a question tool"))
+    assert "straight away, with nothing in between" in body
+
+
 # --- Rule 4: both ways of asking carry the same parts ----------------------
 
-# Each way of asking sends the block, so each carries all six parts. A new
+# Each way of asking sends the block, so each carries all seven parts. A new
 # way of asking added per CONTRIBUTING.md goes in this list.
 HARNESS_SECTIONS = [
     "With a question tool",
@@ -193,7 +225,7 @@ HARNESS_SECTIONS = [
 def test_both_paths_carry_the_same_parts(skill_text, heading):
     """The no-tool path is the one at risk - nobody develops headwork there.
 
-    Both paths send the same block, so both carry the same six parts. A path
+    Both paths send the same block, so both carry the same seven parts. A path
     that stops sending it has stopped carrying them.
     """
     body = section(skill_text, heading)
@@ -410,7 +442,7 @@ def test_agents_md_names_the_right_refusal_case(skill_text):
 def test_only_the_alternatives_carry_a_cost(skill_text):
     """AGENTS.md said the recommendation names its cost too. SKILL.md and the
     worked examples put a COST on the alternatives only."""
-    block = fenced_blocks(section(skill_text, "The six parts"))[0]
+    block = fenced_blocks(section(skill_text, "The seven parts"))[0]
     recommended = re.search(r"^recommended: .*$", block, re.M).group(0)
     assert "cost:" not in recommended, "the block puts a COST on the recommendation"
     agents = (REPO / "AGENTS.md").read_text(encoding="utf-8")
